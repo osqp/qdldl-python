@@ -4,31 +4,29 @@
 #include "Python.h"                 // Python API
 #include "numpy/arrayobject.h"      // Numpy C API
 #include "numpy/npy_math.h"         // For infinity values
-#include "structmember.h"           // Python members structure (to store results)
-#include "osqp.h"                   // OSQP API
+// #include "structmember.h"           // Python members structure (to store results)
+// #include "osqp.h"                   // OSQP API
 
 /* The PyInt variable is a PyLong in Python3.x.
  */
-#if PY_MAJOR_VERSION >= 3
 #define PyInt_AsLong PyLong_AsLong
 #define PyInt_Check PyLong_Check
-#endif
 
 
 // OSQP Object type
-typedef struct {
-    PyObject_HEAD
-    OSQPWorkspace * workspace;  // Pointer to C workspace structure
-} OSQP;
-
-static PyTypeObject OSQP_Type;
-
-
-#include "osqputilspy.h"        // Utilities functions
-#include "osqpinfopy.h"         // Info object
-#include "osqpresultspy.h"      // Results object
-#include "osqpworkspacepy.h"    // OSQP workspace
-#include "osqpobjectpy.h"       // OSQP object
+// typedef struct {
+//     PyObject_HEAD
+//     OSQPWorkspace * workspace;  // Pointer to C workspace structure
+// } OSQP;
+//
+// static PyTypeObject OSQP_Type;
+//
+//
+// #include "osqputilspy.h"        // Utilities functions
+// #include "osqpinfopy.h"         // Info object
+// #include "osqpresultspy.h"      // Results object
+// #include "osqpworkspacepy.h"    // OSQP workspace
+// #include "osqpobjectpy.h"       // OSQP object
 
 
 /************************
@@ -38,7 +36,7 @@ static PyTypeObject OSQP_Type;
  /* Module initialization for Python 3*/
  #if PY_MAJOR_VERSION >= 3
  static struct PyModuleDef moduledef = {
-     PyModuleDef_HEAD_INIT, "_osqp",       /* m_name */
+     PyModuleDef_HEAD_INIT, "_qdldl",       /* m_name */
      NULL,                                 /* m_doc */
      -1,                                   /* m_size */
      NULL,                                 /* m_methods */
@@ -56,11 +54,7 @@ static PyObject * moduleinit(void){
     PyObject *m;
 
     // Initialize module (no methods. all inside OSQP object)
-#if PY_MAJOR_VERSION >= 3
     m = PyModule_Create(&moduledef);
-#else
-    m = Py_InitModule3("_osqp", NULL, NULL);
-#endif
 
     if (m == NULL) return NULL;
 
@@ -93,3 +87,6 @@ PyMODINIT_FUNC PyInit__qdldl(void) {
     return moduleinit();
 
 }
+#else
+    moduleinit();
+#endif
