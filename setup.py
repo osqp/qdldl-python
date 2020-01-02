@@ -9,12 +9,11 @@ from subprocess import call, check_output
 from platform import system
 import os
 import sys
-
+from Cython.Build import cythonize
 
 # Add parameters to cmake_args and define_macros
 cmake_args = ["-DUNITTESTS=OFF"]
 cmake_build_flags = []
-define_macros = []
 lib_subdir = []
 
 # Check if windows linux or mac to pass flag
@@ -27,12 +26,12 @@ if system() == 'Windows':
     if sys.maxsize // 2 ** 32 > 0:
         cmake_args[-1] += ' Win64'
     cmake_build_flags += ['--config', 'Release']
-    lib_name = 'osqp.lib'
+    lib_name = 'qdldl.lib'
     lib_subdir = ['Release']
 
 else:  # Linux or Mac
     cmake_args += ['-G', 'Unix Makefiles']
-    lib_name = 'libosqp.a'
+    lib_name = 'libqdldl.a'
 
 
 # Define qdldl directories
@@ -44,8 +43,6 @@ qdldl_build_dir = os.path.join(qdldl_dir, 'build')
 include_dirs = [
     os.path.join(qdldl_dir,  "include"),     # qdldl includes for file types
     os.path.join('extension', 'include')]   # auxiliary .h files
-
-sources_files = glob(os.path.join('extension', 'src', '*.c'))
 
 
 # Set optimizer flag
@@ -92,14 +89,13 @@ class build_ext_qdldl(build_ext):
         build_ext.build_extensions(self)
 
 
-_osqp = Extension('qdldl._qdldl',
-                  define_macros=define_macros,
-                  libraries=libraries,
-                  library_dirs=library_dirs,
-                  include_dirs=include_dirs,
-                  extra_objects=extra_objects,
-                  sources=sources_files,
-                  extra_compile_args=compile_args)
+_qdldl = Extension('_qdldl',
+        include_dirs=include_dirs,
+        extra_objects=extra_objects,
+        sources=['module/_qdldl.pyx'],
+        extra_compile_args=compile_args)
+
+_qdldl.cython_directives = {'language_level': "3"} #all are Python-3
 
 packages = ['qdldl',
             'qdldl.tests']
@@ -119,10 +115,12 @@ setup(name='qdldl',
       long_description=readme(),
       package_dir={'qdldl': 'module'},
       include_package_data=True,  # Include package data from MANIFEST.in
-      setup_requires=["numpy >= 1.7"],
-      install_requires=["numpy >= 1.7", "scipy >= 0.13.2", "future"],
+      setup_requires=["numpy >= 1.7", "pybind"],
+      install_requires=["numpy >= 1.7", "scipy >= 0.13.2", "pybind"],
       license='Apache 2.0',
       url="https://github.com/oxfordcontrol/qdldlpy/",
       cmdclass={'build_ext': build_ext_qdldl},
       packages=packages,
-      ext_modules=[_qdldl])
+      ext_modules=cythonize([_qdldl]),
+      zip_safe=False,
+      )
