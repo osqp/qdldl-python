@@ -16,6 +16,7 @@ jobs:
 
 env:
   global:
+    - CIBW_SKIP=cp27-*
     - CIBW_TEST_REQUIRES=pytest
     - CIBW_TEST_COMMAND="pytest module/tests"
     - TWINE_USERNAME=bstellato
