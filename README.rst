@@ -29,8 +29,8 @@ To solve the linear system for a right-hand side ``b``, just write
 TODO
 ----
 
- - [ ] Implement AMD
- - [ ] Test GIL release
+- [ ] Implement AMD
+- [ ] Test GIL release
 
 
 
