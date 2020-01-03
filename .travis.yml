@@ -18,7 +18,7 @@ env:
   global:
     - CIBW_SKIP="cp27-*"
     - CIBW_TEST_REQUIRES="pytest"
-    - CIBW_TEST_COMMAND="cd {project} && python -m pytest ."
+    - CIBW_TEST_COMMAND="cd {project} && python -m pytest module/tests"
     # Install cmake
     - CIBW_BEFORE_BUILD_LINUX="pip install cmake; rm `python -c 'import sys; print(sys.executable[:-6])'`cmake; ln -sf `python -c \"from distutils.sysconfig import get_python_lib; print(get_python_lib())\"`/cmake/data/bin/cmake /usr/local/bin/cmake"
     # - CIBW_BEFORE_BUILD_MACOS="brew install cmake"
