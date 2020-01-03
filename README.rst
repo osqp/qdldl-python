@@ -1,6 +1,9 @@
 qdldlpy
 =======
 
+.. image:: https://travis-ci.org/oxfordcontrol/qdldl-python.svg?branch=master
+    :target: https://travis-ci.org/oxfordcontrol/qdldl-python
+
 Python interface to the `QDLDL <https://github.com/oxfordcontrol/qdldl/>`__ free LDL factorization routine for quasi-definite linear systems: `Ax = b`.
 
 Usage
