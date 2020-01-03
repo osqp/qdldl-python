@@ -18,7 +18,7 @@ env:
   global:
     - CIBW_SKIP=cp27-*
     - CIBW_TEST_REQUIRES=pytest
-    - CIBW_TEST_COMMAND="pytest module/tests"
+    - CIBW_TEST_COMMAND="pytest qdldl/tests/"
     - CIBW_BEFORE_BUILD="pip install cmake"
     - TWINE_USERNAME=bstellato
       # Note: TWINE_PASSWORD is set in Travis settings
