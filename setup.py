@@ -40,10 +40,7 @@ qdldl_dir = os.path.join(current_dir, 'qdldl')
 qdldl_build_dir = os.path.join(qdldl_dir, 'build')
 
 # Interface files
-include_dirs = [
-    os.path.join(qdldl_dir,  "include"),     # qdldl includes for file types
-    os.path.join('extension', 'include')]   # auxiliary .h files
-
+include_dirs = [os.path.join(qdldl_dir,  "include")]
 
 # Set optimizer flag
 if system() != 'Windows':
@@ -52,7 +49,7 @@ else:
     compile_args = []
 
 # Add qdldl compiled library
-extra_objects = [os.path.join('extension', 'src', lib_name)]
+extra_objects = [os.path.join('module', lib_name)]
 
 # List with OSQP configure files
 configure_files = [os.path.join(qdldl_dir, 'qdldl_sources', 'configure', 'qdldl_types.h.in')]
@@ -83,13 +80,15 @@ class build_ext_qdldl(build_ext):
         # Copy static library to src folder
         lib_origin = [qdldl_build_dir, 'out'] + lib_subdir + [lib_name]
         lib_origin = os.path.join(*lib_origin)
-        copyfile(lib_origin, os.path.join('extension', 'src', lib_name))
+        print(lib_origin)
+        print(os.path.join('module',  lib_name))
+        copyfile(lib_origin, os.path.join('module',  lib_name))
 
         # Run extension
         build_ext.build_extensions(self)
 
 
-_qdldl = Extension('_qdldl',
+_qdldl = Extension('qdldl._qdldl',
         include_dirs=include_dirs,
         extra_objects=extra_objects,
         sources=['module/_qdldl.pyx'],
@@ -115,8 +114,8 @@ setup(name='qdldl',
       long_description=readme(),
       package_dir={'qdldl': 'module'},
       include_package_data=True,  # Include package data from MANIFEST.in
-      setup_requires=["numpy >= 1.7", "pybind"],
-      install_requires=["numpy >= 1.7", "scipy >= 0.13.2", "pybind"],
+      setup_requires=["numpy >= 1.7"],
+      install_requires=["numpy >= 1.7", "scipy >= 0.13.2"],
       license='Apache 2.0',
       url="https://github.com/oxfordcontrol/qdldlpy/",
       cmdclass={'build_ext': build_ext_qdldl},
