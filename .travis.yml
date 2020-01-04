@@ -31,8 +31,8 @@ env:
   global:
     - CIBW_SKIP="cp27-*"
     # build using a different image from the docker registry
-    - CIBW_MANYLINUX_X86_64_IMAGE=dockcross/manylinux2010-x64
-    - CIBW_MANYLINUX_I686_IMAGE=dockcross/manylinux2010-x86
+    - CIBW_MANYLINUX_X86_64_IMAGE=dockcross/manylinux-x64
+    - CIBW_MANYLINUX_I686_IMAGE=dockcross/manylinux-x86
     - CIBW_TEST_REQUIRES="pytest"
     - CIBW_TEST_COMMAND="cd {project} && python -m pytest --pyargs qdldl"
     # Install cmake
