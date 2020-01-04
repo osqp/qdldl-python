@@ -1,55 +1,41 @@
 language: python
-
 services: docker
 
 jobs:
   include:
-    # perform a linux build
-    - name: "Python 3.8.0 on Xenial Linux"
-      os: linux
-      python: 3.8           # this works for Linux but is ignored on macOS or Windows
-    # and a mac build
-    - name: "Python 3.7.4 on macOS"
-      os: osx
-      language: shell
-      osx_image: xcode11.2  # Python 3.7.4 running on macOS 10.14.4
-    # and a windows build
-    - name: "Python 3.8.0 on Windows"
-      os: windows
-      language: shell
-      before_install:
-        - choco install python --version 3.8.0
-        - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
-
-# NBVV<
-# 'python' points to Python 2.7 on macOS but points to Python 3.8 on Linux and Windows
-# 'python3' is a 'command not found' error on Windows but 'py' works on Windows only
-# TODO: CONTINUE FROM HERE!
-
+  - name: Python 3.8.0 on Xenial Linux
+    os: linux
+    python: 3.8
+  - name: Python 3.7.4 on macOS
+    os: osx
+    language: shell
+    osx_image: xcode11.2
+  - name: Python 3.8.0 on Windows
+    os: windows
+    language: shell
+    before_install:
+    - cmd.exe /C '"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat"
+      amd64'
+    - choco install python --version 3.8.0
+    - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
 
 env:
   global:
-    - CIBW_SKIP="cp27-*"
-    # build using a different image from the docker registry
-    - CIBW_MANYLINUX_X86_64_IMAGE=dockcross/manylinux-x64
-    - CIBW_MANYLINUX_I686_IMAGE=dockcross/manylinux-x86
-    - CIBW_TEST_REQUIRES="pytest"
-    - CIBW_TEST_COMMAND="cd {project} && python -m pytest --pyargs qdldl"
-    # Install cmake
-    # - CIBW_BEFORE_BUILD_LINUX="pip install cmake; rm `python -c 'import sys; print(sys.executable[:-6])'`cmake; ln -sf `python -c \"from distutils.sysconfig import get_python_lib; print(get_python_lib())\"`/cmake/data/bin/cmake /usr/local/bin/cmake"
-    # - CIBW_BEFORE_BUILD_MACOS="brew install cmake"
-    # - CIBW_BEFORE_BUILD_WINDOWS="choco install cmake & pip install cython"
-    - CIBW_BEFORE_BUILD="pip install cython"
-    - TWINE_USERNAME=bstellato
-      # Note: TWINE_PASSWORD is set in Travis settings
+  - CIBW_BUILD=cp3?-*
+  - CIBW_SKIP="*-win32 *-manylinux_i686"
+  - CIBW_MANYLINUX_X86_64_IMAGE=dockcross/manylinux2014-x64
+  - CIBW_TEST_REQUIRES="pytest"
+  - CIBW_TEST_COMMAND="python -m pytest --pyargs qdldl"
+  - CIBW_BEFORE_BUILD="python -m pip install cython"
+  - TWINE_USERNAME=bstellato
+  # TWINE_PASSWORD
+  - secure: jEzPfPAADi4vT4L8KO4Ht5sDMhJoJY+is2SgCTCDv6FMz8+Cq7BbkvtWp7iTrBbGn4lB668bGRztA+m1VhJszRNQGa7vFgauxTnZ0NTOwBIdH36E9PUZSai7WPmEdcpJcpVE2XeV1RcT7zBBzGmMM3QqG1W0FSZkiJNYe4Wwu0Kh+8/5hT6aesqAGix+f1tX8BEXq0Ad9a6SZwvAvLO7SjpXZ35QB6YaI0p72dY0j0sKG7O5FLBuXcrN37+JiD4THHBXcjv1aqhrywzT/9Zmgt/dbnywI+E33U7k1vCbKDHojTT85rwJP9tAi1Pzmg5vakG6Z8ca3ZOryKS6G7QBPLVKHpUpw8VhOB8o8SRujegCepANWuECGjB52um8P013tUiOWHv3PRU4vyfUtmmcDUimL8zYwufwwufLyvbcBkKveyvh806mrZE7LVMtAtIFq2D5VPeA8dyKYWas5z65v2aRS0qsLgJyLrNhbF14qPe6tsM9fhA6r1hpYuhhiRts3GCA2FRBEIe96DSQgNS4nBMaoMHxVTCs28NcI0hjDgXTMGBoX9ONe38tL0HkP/y/76CurAMojz6K9KUZlSClATlnUKDAifyQ20w4950TavivxiumSsoy5ky7k73FHqqtLy6a+O0JBNNYRIdvRYBGoXRwTby3JLZOQZ186O8Cctc=
 
 install:
-  - python -m pip install twine cibuildwheel==1.1.0
+- python -m pip install twine cibuildwheel==1.1.0
 
 script:
-  # build the wheels, put them into './wheelhouse'
-  - python -m cibuildwheel --output-dir wheelhouse
+- python -m cibuildwheel --output-dir wheelhouse
 
 after_success:
-  # if the release was tagged, upload them to PyPI
-  - if [[ $TRAVIS_TAG ]]; then python -m twine upload wheelhouse/*.whl; fi
+- if [[ $TRAVIS_TAG ]]; then python -m twine upload wheelhouse/*.whl; fi
