@@ -21,13 +21,6 @@ jobs:
         - cmd.exe /C '"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat" amd64'
         - choco install python --version 3.8.0
         - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
-        # - choco install visualstudio2019buildtools --package-parameters "--includeRecommended --includeOptional"
-        # - choco install visualstudio2019-workload-vctools
-
-# NBVV<
-# 'python' points to Python 2.7 on macOS but points to Python 3.8 on Linux and Windows
-# 'python3' is a 'command not found' error on Windows but 'py' works on Windows only
-# TODO: CONTINUE FROM HERE!
 
 
 env:
