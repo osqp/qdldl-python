@@ -6,7 +6,7 @@ cimport cython
 
 cdef extern from "qdldl.h":
 
-    ctypedef long QDLDL_int
+    ctypedef long long QDLDL_int
     ctypedef double QDLDL_float
     ctypedef unsigned char QDLDL_bool
 
