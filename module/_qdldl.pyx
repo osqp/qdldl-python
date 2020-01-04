@@ -110,17 +110,17 @@ def factor(A):
 
     # TODO: Check if arrays are contiguous before converting
     # them using np.ascontiguousarray
-    cdef QDLDL_int[::1] Ai = np.ascontiguousarray(A.indices.astype(long))
-    cdef QDLDL_int[::1] Ap = np.ascontiguousarray(A.indptr.astype(long))
+    cdef QDLDL_int[::1] Ai = np.ascontiguousarray(A.indices.astype(np.int64))
+    cdef QDLDL_int[::1] Ap = np.ascontiguousarray(A.indptr.astype(np.int64))
     cdef QDLDL_float[::1] Ax = np.ascontiguousarray(A.data)
 
     # Memory allocations
-    cdef QDLDL_int[::1] etree = np.empty(n, dtype=np.int_, order='C')
-    cdef QDLDL_int[::1] Lnz = np.empty(n, dtype=np.int_, order='C')
-    cdef QDLDL_int[::1] Lp = np.empty(n + 1, dtype=np.int_, order='C')
+    cdef QDLDL_int[::1] etree = np.empty(n, dtype=np.int64, order='C')
+    cdef QDLDL_int[::1] Lnz = np.empty(n, dtype=np.int64, order='C')
+    cdef QDLDL_int[::1] Lp = np.empty(n + 1, dtype=np.int64, order='C')
     cdef QDLDL_float[::1] D = np.empty(n, dtype=np.double, order='C')
     cdef QDLDL_float[::1] Dinv = np.empty(n, dtype=np.double, order='C')
-    cdef QDLDL_int[::1] iwork = np.empty(3 * n, dtype=np.int_, order='C')
+    cdef QDLDL_int[::1] iwork = np.empty(3 * n, dtype=np.int64, order='C')
     cdef QDLDL_bool[::1] bwork = np.empty(n, dtype=np.ubyte, order='C')
     cdef QDLDL_float[::1] fwork = np.empty(n, dtype=np.double, order='C')
 
@@ -132,7 +132,7 @@ def factor(A):
         raise ValueError("Input matrix is not quasi-definite")
 
     # Allocate L memory
-    cdef QDLDL_int[::1] Li = np.empty(sum_Lnz, dtype=int, order='C')
+    cdef QDLDL_int[::1] Li = np.empty(sum_Lnz, dtype=np.int64, order='C')
     cdef QDLDL_float[::1] Lx = np.empty(sum_Lnz, dtype=np.double, order='C')
 
     # Factor
