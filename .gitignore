@@ -133,3 +133,4 @@ dmypy.json
 # Generated files
 _qdldl.c
 libqdldl.*
+*.DS_Store

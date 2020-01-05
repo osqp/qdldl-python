@@ -33,7 +33,7 @@ else:  # Linux or Mac
 
 # Define qdldl directories
 current_dir = os.getcwd()
-qdldl_dir = os.path.join(current_dir, 'qdldl')
+qdldl_dir = os.path.join(current_dir, 'c', 'qdldl')
 qdldl_build_dir = os.path.join(qdldl_dir, 'build')
 
 # Interface files
