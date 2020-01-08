@@ -9,7 +9,28 @@ from subprocess import call, check_output
 from platform import system
 import os
 import sys
-from Cython.Build import cythonize
+import distutils
+import platform
+
+
+class get_pybind_include(object):
+    """Helper class to determine the pybind11 include path
+
+    The purpose of this class is to postpone importing pybind11
+    until it is actually installed, so that the ``get_include()``
+    method can be invoked. """
+
+    def __init__(self, user=False):
+        try:
+            import pybind11
+        except ImportError:
+            if subprocess.call([sys.executable, '-m', 'pip', 'install', 'pybind11']):
+                raise RuntimeError('pybind11 install failed.')
+        self.user = user
+
+    def __str__(self):
+        import pybind11
+        return pybind11.get_include(self.user)
 
 # Add parameters to cmake_args and define_macros
 cmake_args = ["-DUNITTESTS=OFF"]
@@ -30,30 +51,20 @@ else:  # Linux or Mac
     cmake_args += ['-G', 'Unix Makefiles']
     lib_name = 'libqdldl.a'
 
-
-# Define qdldl directories
-current_dir = os.getcwd()
-qdldl_dir = os.path.join(current_dir, 'c', 'qdldl')
-qdldl_build_dir = os.path.join(qdldl_dir, 'build')
-
-# Interface files
-include_dirs = [os.path.join(qdldl_dir,  "include")]
-
 # Set optimizer flag
 if system() != 'Windows':
     compile_args = ["-O3"]
 else:
     compile_args = []
 
-# Add qdldl compiled library
-extra_objects = [os.path.join('module', lib_name)]
-
-# List with OSQP configure files
-configure_files = [os.path.join(qdldl_dir, 'qdldl_sources', 'configure', 'qdldl_types.h.in')]
+# Compile QDLDL using CMake
+current_dir = os.getcwd()
+qdldl_dir = os.path.join(current_dir, 'c', 'qdldl')
+qdldl_build_dir = os.path.join(qdldl_dir, 'build')
+qdldl_lib = os.path.join('module', lib_name)
 
 class build_ext_qdldl(build_ext):
     def build_extensions(self):
-        # Compile QDLDL using CMake
 
         # Create build directory
         if os.path.exists(qdldl_build_dir):
@@ -85,13 +96,33 @@ class build_ext_qdldl(build_ext):
         build_ext.build_extensions(self)
 
 
-_qdldl = Extension('qdldl._qdldl',
-        include_dirs=include_dirs,
-        extra_objects=extra_objects,
-        sources=['module/_qdldl.pyx'],
-        extra_compile_args=compile_args)
+# OLD Cython
+#  _qdldl = Extension('qdldl._qdldl',
+#          include_dirs=include_dirs,
+#          extra_objects=extra_objects,
+#          sources=['module/_qdldl.pyx'],
+#          extra_compile_args=compile_args)
+#  _qdldl.cython_directives = {'language_level': "3"} #all are Python-3
 
-_qdldl.cython_directives = {'language_level': "3"} #all are Python-3
+
+#  if sys.platform == 'darwin':
+#      if 'MACOSX_DEPLOYMENT_TARGET' not in os.environ:
+#          current_system = distutils.version.LooseVersion(platform.mac_ver()[0])
+#          python_target = distutils.version.LooseVersion(
+#              distutils.sysconfig.get_config_var('MACOSX_DEPLOYMENT_TARGET'))
+#          if python_target < '10.9' and current_system >= '10.9':
+#              os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
+
+_qdldl = Extension('_qdldl',
+                   sources= glob("cpp/src/*.cpp"),
+                   include_dirs=[os.path.join(qdldl_dir,'include'),
+                                 os.path.join('cpp','include'),
+                                 get_pybind_include(),
+                                 get_pybind_include(user=False)],
+                   language='c++',
+                   extra_compile_args = compile_args + ['-std=c++11'],
+                   extra_objects=[qdldl_lib])
+
 
 packages = ['qdldl',
             'qdldl.tests']
@@ -111,12 +142,11 @@ setup(name='qdldl',
       long_description=readme(),
       package_dir={'qdldl': 'module'},
       include_package_data=True,  # Include package data from MANIFEST.in
-      setup_requires=["setuptools>=18.0", "cython"],
+      setup_requires=["setuptools>=18.0", "pybind11"],
       install_requires=["numpy >= 1.7", "scipy >= 0.13.2"],
       license='Apache 2.0',
       url="https://github.com/oxfordcontrol/qdldlpy/",
       cmdclass={'build_ext': build_ext_qdldl},
       packages=packages,
-      ext_modules=cythonize([_qdldl]),
-      zip_safe=False,
+      ext_modules=[_qdldl],
       )

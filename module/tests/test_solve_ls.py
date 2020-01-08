@@ -22,12 +22,16 @@ class solve_ls(unittest.TestCase):
         M = spa.bmat([[A, B.T], [B, C]], format='csc')
         b = np.random.randn(n + n)
 
-        F = qdldl.factor(M)
-        x_qdldl = F.solve(b)
-        x_scipy = sla.spsolve(M, b)
+        c = qdldl._qdldl.etree(M)
 
-        # Assert close
-        nptest.assert_array_almost_equal(x_qdldl, x_scipy)
+        import ipdb; ipdb.set_trace()
+
+        #  F = qdldl.factor(M)
+        #  x_qdldl = F.solve(b)
+        #  x_scipy = sla.spsolve(M, b)
+        #
+        #  # Assert close
+        #  nptest.assert_array_almost_equal(x_qdldl, x_scipy)
 
     def test_scalar_ls(self):
         M = spa.csc_matrix(np.random.randn(1, 1))

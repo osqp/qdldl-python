@@ -28,6 +28,11 @@ void permutet_x(c_int n, c_float * x, const c_float * b, const c_int * P) {
 }
 
 
+
+KKT_temp = csc_symperm((*KKT), Pinv, KtoPKPt, 1);
+
+
+
 csc* csc_symperm(const csc *A, const c_int *pinv, c_int *AtoC, c_int values) {
   c_int i, j, p, q, i2, j2, n, *Ap, *Ai, *Cp, *Ci, *w;
   c_float *Cx, *Ax;
