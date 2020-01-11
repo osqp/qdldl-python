@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.sparse as spa
-import _qdldl
+from warning import warn
+import qdldl._qdldl
 
 class QDLDLFactor:
 
@@ -44,6 +45,15 @@ def factor(A):
         raise ValueError("Matrix A is empty")
 
     A = spa.triu(A, format='csc')
+
+
+    Ai = np.ascontiguousarray(A.indices.astype(np.int64))
+    Ap = np.ascontiguousarray(A.indptr.astype(np.int64))
+    Ax = np.ascontiguousarray(A.data)
+
+    sum_Lnz = _qdldl.etree
+
+
 
     # TODO: Factor using low level
 
