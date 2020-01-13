@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.sparse as spa
-from warning import warn
-import qdldl._qdldl
+from warnings import warn
+import qdldl._qdldl as _qdldl
 
 class QDLDLFactor:
 
@@ -47,18 +47,11 @@ def factor(A):
     A = spa.triu(A, format='csc')
 
 
-    Ai = np.ascontiguousarray(A.indices.astype(np.int64))
-    Ap = np.ascontiguousarray(A.indptr.astype(np.int64))
-    Ax = np.ascontiguousarray(A.data)
+    #  Ai = np.ascontiguousarray(A.indices.astype(np.int64))
+    #  Ap = np.ascontiguousarray(A.indptr.astype(np.int64))
+    #  Ax = np.ascontiguousarray(A.data)
 
-    sum_Lnz = _qdldl.etree
-
-
-
-    # TODO: Factor using low level
-
-
-    # Return
+    return _qdldl.factor(A.indptr, A.indices, A.data)
 
 
 

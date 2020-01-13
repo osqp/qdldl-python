@@ -42,9 +42,13 @@
 extern "C" {
 #endif
 
-#include "glob_opts.h"
+
 #include <limits.h>
 #include <stdlib.h>
+
+
+#include "qdldl_types.h"
+typedef QDLDL_float c_float
 
 /* ========================================================================== */
 /* === SuiteSparse_long ===================================================== */
@@ -52,7 +56,7 @@ extern "C" {
 
 #ifndef SuiteSparse_long
 
-#define SuiteSparse_long long long
+#define SuiteSparse_long QDLDL_int
 #define SuiteSparse_long_max LONG_MAX
 #define SuiteSparse_long_idd "ld"
 

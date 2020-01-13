@@ -1,7 +1,9 @@
 #include "perm.h"
 
-c_int csc_cumsum(c_int *p, c_int *c, c_int n) {
-  c_int i, nz = 0;
+#  define c_max(a, b) (((a) > (b)) ? (a) : (b))
+
+QDLDL_int cumsum(QDLDL_int *p, QDLDL_int *c, QDLDL_int n) {
+  QDLDL_int i, nz = 0;
 
   if (!p || !c) return -1;  /* check inputs */
 
@@ -16,41 +18,34 @@ c_int csc_cumsum(c_int *p, c_int *c, c_int n) {
 }
 
 
-void permute_x(c_int n, c_float * x, const c_float * b, const c_int * P) {
-    c_int j;
+void permute_x(QDLDL_int n, QDLDL_float * x, const QDLDL_float * b, const QDLDL_int * P) {
+    QDLDL_int j;
     for (j = 0 ; j < n ; j++) x[j] = b[P[j]];
 }
 
 
-void permutet_x(c_int n, c_float * x, const c_float * b, const c_int * P) {
-    c_int j;
+void permutet_x(QDLDL_int n, QDLDL_float * x, const QDLDL_float * b, const QDLDL_int * P) {
+    QDLDL_int j;
     for (j = 0 ; j < n ; j++) x[P[j]] = b[j];
 }
 
 
+void pinv(QDLDL_int const *p, QDLDL_int * pinv, QDLDL_int n) {
+  QDLDL_int k;
+  for (k = 0; k < n; k++) pinv[p[k]] = k;  /* invert the permutation */
+}
 
-KKT_temp = csc_symperm((*KKT), Pinv, KtoPKPt, 1);
 
-
-
-csc* csc_symperm(const csc *A, const c_int *pinv, c_int *AtoC, c_int values) {
-  c_int i, j, p, q, i2, j2, n, *Ap, *Ai, *Cp, *Ci, *w;
-  c_float *Cx, *Ax;
-  csc     *C;
-
-  n  = A->n;
-  Ap = A->p;
-  Ai = A->i;
-  Ax = A->x;
-  C  = csc_spalloc(n, n, Ap[n], values && (Ax != OSQP_NULL),
-                   0);                                /* alloc result*/
-  w = csc_calloc(n, sizeof(c_int));                   /* get workspace */
-
-  if (!C || !w) return csc_done(C, w, OSQP_NULL, 0);  /* out of memory */
-
-  Cp = C->p;
-  Ci = C->i;
-  Cx = C->x;
+void symperm(QDLDL_int n,
+		     const QDLDL_int * Ap,
+			 const QDLDL_int * Ai,
+			 const QDLDL_float * Ax,
+			 QDLDL_int * Cp,
+			 QDLDL_int * Ci,
+			 QDLDL_float * Cx,
+			 QDLDL_int * pinv,
+			 QDLDL_int * w){
+  QDLDL_int i, j, p, q, i2, j2, n;
 
   for (j = 0; j < n; j++)    /* count entries in each column of C */
   {
@@ -64,7 +59,7 @@ csc* csc_symperm(const csc *A, const c_int *pinv, c_int *AtoC, c_int values) {
       w[c_max(i2, j2)]++;      /* column count of C */
     }
   }
-  csc_cumsum(Cp, w, n);        /* compute column pointers of C */
+  cumsum(Cp, w, n);        /* compute column pointers of C */
 
   for (j = 0; j < n; j++) {
     j2 = pinv ? pinv[j] : j;   /* column j of A is column j2 of C */
@@ -80,10 +75,6 @@ csc* csc_symperm(const csc *A, const c_int *pinv, c_int *AtoC, c_int values) {
 
       if (Cx) Cx[q] = Ax[p];
 
-      if (AtoC) { // If vector AtoC passed, store values of the mappings
-        AtoC[p] = q;
-      }
     }
   }
-  return csc_done(C, w, OSQP_NULL, 1); /* success; free workspace, return C */
 }

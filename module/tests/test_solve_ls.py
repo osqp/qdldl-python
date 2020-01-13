@@ -22,7 +22,7 @@ class solve_ls(unittest.TestCase):
         M = spa.bmat([[A, B.T], [B, C]], format='csc')
         b = np.random.randn(n + n)
 
-        c = qdldl._qdldl.etree(M)
+        Lp, Li, Lx, D, Dinv = qdldl.factor(M)
 
         import ipdb; ipdb.set_trace()
 

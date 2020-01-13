@@ -37,7 +37,7 @@
 #define NDEBUG
 #endif
 
-#include "glob_opts.h"
+#include "qdldl_types.h"
 
 /*
     To enable debugging, uncomment the following line:

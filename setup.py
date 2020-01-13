@@ -114,9 +114,11 @@ if sys.platform == 'darwin':
             os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
 
 _qdldl = Extension('qdldl._qdldl',
-                   sources= glob("cpp/src/*.cpp"),
+                   sources= glob(os.path.join('c', 'amd', 'src', '*.c')) + \
+                           glob(os.path.join('cpp', 'src', '*.cpp')),
                    include_dirs=[os.path.join(qdldl_dir,'include'),
-                                 os.path.join('cpp','include'),
+                                 os.path.join('c', 'amd', 'include'),
+                                 os.path.join('cpp', 'include'),
                                  get_pybind_include(),
                                  get_pybind_include(user=False)],
                    language='c++',
