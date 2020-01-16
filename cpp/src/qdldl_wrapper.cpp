@@ -1,11 +1,12 @@
+// Source code for QDLDL, AMD and permutations
+#include "qdldl/include/qdldl.h"
+#include "amd/include/amd.h"
+#include "amd/include/perm.h"
+
 #include <stdlib.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 
-// Source code for QDLDL, AMD and permutations
-#include "qdldl.h"
-#include "amd.h"
-#include "perm.h"
 
 namespace py = pybind11;
 
@@ -47,6 +48,9 @@ py::tuple py_factor(const py::array_t<QDLDL_int, py::array::c_style | py::array:
     auto Ax = static_cast<QDLDL_float *>(Ax_py.request().ptr);
 
     QDLDL_int Anz = Ap[n];
+
+	// DEBUG
+	py::print("Anz =", Anz);
 
 	//For the elimination tree
 	QDLDL_int *etree = new QDLDL_int[n];
@@ -93,6 +97,8 @@ py::tuple py_factor(const py::array_t<QDLDL_int, py::array::c_style | py::array:
 
 	// Compute elimination tree
     int sum_Lnz = QDLDL_etree(n, Apermp, Apermi, iwork, Lnz, etree);
+    // DEBUG
+	py::print(sum_Lnz);
 	if (sum_Lnz < 0)
 		throw py::value_error("Input matrix is not quasi-definite, sum_Lnz = " + std::to_string(sum_Lnz));
 

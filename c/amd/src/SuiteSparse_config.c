@@ -9,9 +9,6 @@
  * Author: Timothy A. Davis.
  */
 
-// Include OSQP Global options for memory management
-#include "glob_opts.h"
-
 #include <math.h>
 #include <stdlib.h>
 
@@ -57,10 +54,14 @@
 struct SuiteSparse_config_struct SuiteSparse_config =
 {
     // Memory allocation from glob_opts.h in OSQP
-    c_malloc, c_realloc, c_free,
+    malloc, realloc, free,
 
-    // Suitesparse printing disabled
+    #ifdef PRINTING
+    // Printing function from glop_opts.h in OSQP
+    print,
+    #else
     NULL,
+    #endif
 
     SuiteSparse_hypot,
     SuiteSparse_divcomplex
@@ -147,8 +148,7 @@ void *SuiteSparse_realloc   /* pointer to reallocated block of memory, or
     {
         /* change the size of the object from nitems_old to nitems_new */
         void *pnew ;
-        // pnew = (void *) (SuiteSparse_config.realloc_func) (p, size) ;
-        pnew = (void *) c_realloc (p, size) ;
+		pnew = (void *) (SuiteSparse_config.realloc_func) (p, size) ;
         if (pnew == NULL)
         {
             if (nitems_new < nitems_old)

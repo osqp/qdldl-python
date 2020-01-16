@@ -44,12 +44,12 @@ if system() == 'Windows':
     if sys.maxsize // 2 ** 32 > 0:
         cmake_args[-1] += ' Win64'
     cmake_build_flags += ['--config', 'Release']
-    lib_name = 'qdldl.lib'
+    lib_name = 'qdldlamd.lib'
     lib_subdir = ['Release']
 
 else:  # Linux or Mac
     cmake_args += ['-G', 'Unix Makefiles']
-    lib_name = 'libqdldl.a'
+    lib_name = 'libqdldlamd.a'
 
 # Set optimizer flag
 if system() != 'Windows':
@@ -59,7 +59,7 @@ else:
 
 # Compile QDLDL using CMake
 current_dir = os.getcwd()
-qdldl_dir = os.path.join(current_dir, 'c', 'qdldl')
+qdldl_dir = os.path.join(current_dir, 'c',)
 qdldl_build_dir = os.path.join(qdldl_dir, 'build')
 qdldl_lib = os.path.join('module', lib_name)
 
@@ -79,7 +79,7 @@ class build_ext_qdldl(build_ext):
 
         # Compile static library with CMake
         call(['cmake'] + cmake_args + ['..'])
-        call(['cmake', '--build', '.', '--target', 'qdldlstatic'] +
+        call(['cmake', '--build', '.', '--target', 'qdldlamd'] +
              cmake_build_flags)
 
         # Change directory back to the python interface
@@ -114,11 +114,9 @@ if sys.platform == 'darwin':
             os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
 
 _qdldl = Extension('qdldl._qdldl',
-                   sources= glob(os.path.join('c', 'amd', 'src', '*.c')) + \
-                           glob(os.path.join('cpp', 'src', '*.cpp')),
-                   include_dirs=[os.path.join(qdldl_dir,'include'),
-                                 os.path.join('c', 'amd', 'include'),
-                                 os.path.join('cpp', 'include'),
+                   sources= glob(os.path.join('cpp', 'src', '*.cpp')),
+                   include_dirs=[os.path.join('c'),
+                                 os.path.join('c', 'qdldl', 'include'),
                                  get_pybind_include(),
                                  get_pybind_include(user=False)],
                    language='c++',

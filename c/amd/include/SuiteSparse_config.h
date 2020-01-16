@@ -42,13 +42,12 @@
 extern "C" {
 #endif
 
+#include "qdldl_types.h"
+#define DLONG
+typedef QDLDL_float c_float;
 
 #include <limits.h>
 #include <stdlib.h>
-
-
-#include "qdldl_types.h"
-typedef QDLDL_float c_float
 
 /* ========================================================================== */
 /* === SuiteSparse_long ===================================================== */
@@ -56,7 +55,7 @@ typedef QDLDL_float c_float
 
 #ifndef SuiteSparse_long
 
-#define SuiteSparse_long QDLDL_int
+#define SuiteSparse_long long long
 #define SuiteSparse_long_max LONG_MAX
 #define SuiteSparse_long_idd "ld"
 
@@ -151,9 +150,6 @@ int SuiteSparse_divcomplex
 
 /* OSQP: disabling this timing code */
 #define NTIMER
-
-/* OSQP: disabling Suitesparse printing */
-#define NPRINT
 
 /* determine which timer to use, if any */
 #ifndef NTIMER

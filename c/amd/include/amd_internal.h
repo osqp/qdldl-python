@@ -38,6 +38,9 @@
 #endif
 
 #include "qdldl_types.h"
+#ifndef DLONG
+#define DLONG
+#endif
 
 /*
     To enable debugging, uncomment the following line:

@@ -1,3 +1,7 @@
+# ifdef __cplusplus
+extern "C" {
+# endif // ifdef __cplusplus
+
 #include "qdldl_types.h"
 
 /**
@@ -19,7 +23,7 @@ void symperm(QDLDL_int n,
  * Compute inverse of permutation matrix stored in the vector p.
  * The computed inverse is also stored in a vector.
  */
-QDLDL_int* pinv(QDLDL_int const *p, QDLDL_int * pinv, QDLDL_int        n);
+void pinv(QDLDL_int const *p, QDLDL_int * pinv, QDLDL_int        n);
 
 
 /* Permute x = P*b using P */
@@ -27,3 +31,10 @@ void permute_x(QDLDL_int n, QDLDL_float * x, const QDLDL_float * b, const QDLDL_
 
 /* Permute x = P'*b using P */
 void permutet_x(QDLDL_int n, QDLDL_float * x, const QDLDL_float * b, const QDLDL_int * P);
+
+
+
+
+#ifdef __cplusplus
+}
+#endif
