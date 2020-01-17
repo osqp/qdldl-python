@@ -15,7 +15,7 @@ void symperm(QDLDL_int n,
 			 QDLDL_int * Cp,
 			 QDLDL_int * Ci,
 			 QDLDL_float * Cx,
-			 QDLDL_int * pinv,
+			 const QDLDL_int * pinv,
 			 QDLDL_int * w);
 
 
@@ -23,7 +23,7 @@ void symperm(QDLDL_int n,
  * Compute inverse of permutation matrix stored in the vector p.
  * The computed inverse is also stored in a vector.
  */
-void pinv(QDLDL_int const *p, QDLDL_int * pinv, QDLDL_int        n);
+void pinv(const QDLDL_int *p, QDLDL_int * pinv, QDLDL_int        n);
 
 
 /* Permute x = P*b using P */

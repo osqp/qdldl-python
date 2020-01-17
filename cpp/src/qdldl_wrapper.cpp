@@ -81,11 +81,14 @@ py::tuple py_factor(const py::array_t<QDLDL_int, py::array::c_style | py::array:
 	QDLDL_int * Pinv = static_cast<QDLDL_int *>(Pinv_np.request().ptr);
     QDLDL_float *info = new QDLDL_float[AMD_INFO];
 
-	QDLDL_int amd_status = amd_l_order(n, Ap, Ai, P, NULL, info);
+	QDLDL_int amd_status = amd_l_order(n, Ap, Ai, P, NULL, NULL);
 	if (amd_status < 0)
 		throw py::value_error("Error in AMD computation " + std::to_string(amd_status));
 
 	pinv(P, Pinv, n); // Compute inverse permutation
+
+	py::print("P =", P_np);
+	py::print("Pinv =", Pinv_np);
 
 	// Compute permuted matrix
 	QDLDL_int *Apermp = new QDLDL_int[n + 1];
@@ -97,8 +100,16 @@ py::tuple py_factor(const py::array_t<QDLDL_int, py::array::c_style | py::array:
 
 	// Compute elimination tree
     int sum_Lnz = QDLDL_etree(n, Apermp, Apermi, iwork, Lnz, etree);
+
     // DEBUG
-	py::print(sum_Lnz);
+	// py::print("sum_Lnz =", sum_Lnz);
+	// py::print("Apermp =");
+	// for(int i = 1; i < n + 1; i++) py::print(Apermp[i]);
+	// py::print("Apermi =");
+	// for(int i = 1; i < n + 1; i++) py::print(Apermi[i]);
+	// py::print("Apermx =");
+	// for(int i = 1; i < n + 1; i++) py::print(Apermx[i]);
+
 	if (sum_Lnz < 0)
 		throw py::value_error("Input matrix is not quasi-definite, sum_Lnz = " + std::to_string(sum_Lnz));
 
@@ -132,10 +143,36 @@ py::tuple py_factor(const py::array_t<QDLDL_int, py::array::c_style | py::array:
 
 }
 
+/* solves P'LDL'P x = b for x */
+py::array_t<QDLDL_float> py_solve(QDLDL_int n,
+const py::array_t<QDLDL_float, py::array::c_style | py::array::forcecast> b_py,
+const py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast> Lp_py,
+const py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast> Li_py,
+const py::array_t<QDLDL_float, py::array::c_style | py::array::forcecast> Lx_py,
+const py::array_t<QDLDL_float, py::array::c_style | py::array::forcecast> Dinv_py,
+const py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast> P_py) {
+
+
+    // Extract arrays
+    auto b = static_cast<QDLDL_float *>(b_py.request().ptr);
+    auto Lp = static_cast<QDLDL_int *>(Lp_py.request().ptr);
+    auto Li = static_cast<QDLDL_int *>(Li_py.request().ptr);
+	auto Lx = static_cast<QDLDL_float *>(Lx_py.request().ptr);
+	auto Dinv = static_cast<QDLDL_float *>(Dinv_py.request().ptr);
+	auto P = static_cast<QDLDL_int *>(P_py.request().ptr);
+
+    // Create solution vector
+	py::array_t<QDLDL_float> x_np = py::array_t<QDLDL_float>(n);
+	QDLDL_float * x = static_cast<QDLDL_float *>(x_np.request().ptr);
+
+    permute_x(n, x, b, P);
+    QDLDL_solve(n, Lp, Li, Lx, Dinv, x);
+    permutet_x(n, x, x, P);
+
+	return x_np;
+}
 
 void init_qdldl_wrapper(py::module &m){
-  // m.def("etree", &py_etree);
   m.def("factor", &py_factor);
-  // m.def("factor", &py_factor);
-  // m.def("solve", &py_solve);
+  m.def("solve", &py_solve);
 }

@@ -1,7 +1,7 @@
 #include "perm.h"
 
-#  define c_max(a, b) (((a) > (b)) ? (a) : (b))
-#  define c_min(a, b) (((a) > (b)) ? (a) : (b))
+# define c_max(a, b) (((a) > (b)) ? (a) : (b))
+# define c_min(a, b) (((a) < (b)) ? (a) : (b))
 
 QDLDL_int cumsum(QDLDL_int *p, QDLDL_int *c, QDLDL_int n) {
   QDLDL_int i, nz = 0;
@@ -44,7 +44,7 @@ void symperm(QDLDL_int n,
 			 QDLDL_int * Cp,
 			 QDLDL_int * Ci,
 			 QDLDL_float * Cx,
-			 QDLDL_int * pinv,
+			 const QDLDL_int * pinv,
 			 QDLDL_int * w){
   QDLDL_int i, j, p, q, i2, j2;
 

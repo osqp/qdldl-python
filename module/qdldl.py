@@ -5,10 +5,12 @@ import qdldl._qdldl as _qdldl
 
 class QDLDLFactor:
 
-    def __init__(self, Lx, Li, Lp, Dinv, P):
+    def __init__(self, n, Lx, Li, Lp, D, Dinv, P):
+        self._n = n
         self._Lx = Lx
         self._Lp = Lp
         self._Li = Li
+        self._D = D
         self._Dinv = Dinv
         self._P = P
 
@@ -25,7 +27,13 @@ class QDLDLFactor:
         return self._P
 
     def solve(self, b):
-        return _qdldl.solve(b)
+        return _qdldl.solve(self._n,
+                            b,
+                            self._Lp,
+                            self._Li,
+                            self._Lx,
+                            self._Dinv,
+                            self._P)
 
 
 def factor(A):
@@ -46,12 +54,9 @@ def factor(A):
 
     A = spa.triu(A, format='csc')
 
+    Lp, Li, Lx, D, Dinv, P, Pinv = _qdldl.factor(A.indptr, A.indices, A.data)
 
-    #  Ai = np.ascontiguousarray(A.indices.astype(np.int64))
-    #  Ap = np.ascontiguousarray(A.indptr.astype(np.int64))
-    #  Ax = np.ascontiguousarray(A.data)
-
-    return _qdldl.factor(A.indptr, A.indices, A.data)
+    return QDLDLFactor(n, Lx, Li, Lp, D, Dinv, P)
 
 
 

@@ -22,14 +22,13 @@ class solve_ls(unittest.TestCase):
         M = spa.bmat([[A, B.T], [B, C]], format='csc')
         b = np.random.randn(n + n)
 
-        Lp, Li, Lx, D, Dinv, P, Pinv = qdldl.factor(M)
+        m = qdldl.factor(M)
+
+        x_qdldl = m.solve(b)
+        x_scipy = sla.spsolve(M, b)
 
         import ipdb; ipdb.set_trace()
 
-        #  F = qdldl.factor(M)
-        #  x_qdldl = F.solve(b)
-        #  x_scipy = sla.spsolve(M, b)
-        #
         #  # Assert close
         #  nptest.assert_array_almost_equal(x_qdldl, x_scipy)
 
