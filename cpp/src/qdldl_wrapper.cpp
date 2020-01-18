@@ -11,31 +11,6 @@
 namespace py = pybind11;
 
 
-int py_etree(const py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast> Ap_py,
-	  const py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast> Ai_py,
-	  py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast> iwork_py,
-	  py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast> Lnz_py,
-	  py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast> etree_py){
-
-
-    QDLDL_int n = Ap_py.size() - 1;
-
-    auto Ap = static_cast<QDLDL_int *>(Ap_py.request().ptr);
-    auto Ai = static_cast<QDLDL_int *>(Ai_py.request().ptr);
-    auto iwork = static_cast<QDLDL_int *>(iwork_py.request().ptr);
-    auto Lnz = static_cast<QDLDL_int *>(Lnz_py.request().ptr);
-    auto etree = static_cast<QDLDL_int *>(etree_py.request().ptr);
-
-    int sum_Lnz = QDLDL_etree(n, Ap, Ai, iwork, Lnz, etree);
-
-    if (sum_Lnz < 0) py::value_error("Input matrix is not quasi-definite");
-
-    return sum_Lnz;
-
-}
-
-
-
 py::tuple py_factor(const py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast> Ap_py,
 	  const py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast> Ai_py,
 	  const py::array_t<QDLDL_float, py::array::c_style | py::array::forcecast> Ax_py){
@@ -48,9 +23,6 @@ py::tuple py_factor(const py::array_t<QDLDL_int, py::array::c_style | py::array:
     auto Ax = static_cast<QDLDL_float *>(Ax_py.request().ptr);
 
     QDLDL_int Anz = Ap[n];
-
-	// DEBUG
-	py::print("Anz =", Anz);
 
 	//For the elimination tree
 	QDLDL_int *etree = new QDLDL_int[n];
@@ -77,18 +49,13 @@ py::tuple py_factor(const py::array_t<QDLDL_int, py::array::c_style | py::array:
 	// Permute A
 	py::array_t<QDLDL_int> P_np = py::array_t<QDLDL_int>(n);
 	QDLDL_int * P = static_cast<QDLDL_int *>(P_np.request().ptr);
-	py::array_t<QDLDL_int> Pinv_np = py::array_t<QDLDL_int>(n);
-	QDLDL_int * Pinv = static_cast<QDLDL_int *>(Pinv_np.request().ptr);
-    QDLDL_float *info = new QDLDL_float[AMD_INFO];
+	QDLDL_int * Pinv = new QDLDL_int[n];
 
 	QDLDL_int amd_status = amd_l_order(n, Ap, Ai, P, NULL, NULL);
 	if (amd_status < 0)
 		throw py::value_error("Error in AMD computation " + std::to_string(amd_status));
 
 	pinv(P, Pinv, n); // Compute inverse permutation
-
-	py::print("P =", P_np);
-	py::print("Pinv =", Pinv_np);
 
 	// Compute permuted matrix
 	QDLDL_int *Apermp = new QDLDL_int[n + 1];
@@ -100,15 +67,6 @@ py::tuple py_factor(const py::array_t<QDLDL_int, py::array::c_style | py::array:
 
 	// Compute elimination tree
     int sum_Lnz = QDLDL_etree(n, Apermp, Apermi, iwork, Lnz, etree);
-
-    // DEBUG
-	// py::print("sum_Lnz =", sum_Lnz);
-	// py::print("Apermp =");
-	// for(int i = 1; i < n + 1; i++) py::print(Apermp[i]);
-	// py::print("Apermi =");
-	// for(int i = 1; i < n + 1; i++) py::print(Apermi[i]);
-	// py::print("Apermx =");
-	// for(int i = 1; i < n + 1; i++) py::print(Apermx[i]);
 
 	if (sum_Lnz < 0)
 		throw py::value_error("Input matrix is not quasi-definite, sum_Lnz = " + std::to_string(sum_Lnz));
@@ -130,14 +88,14 @@ py::tuple py_factor(const py::array_t<QDLDL_int, py::array::c_style | py::array:
 	delete [] iwork;
 	delete [] bwork;
 	delete [] fwork;
-	delete [] info;
 	delete [] Apermp;
 	delete [] Apermi;
 	delete [] Apermx;
+	delete [] Pinv;
 	delete [] work_perm;
 
 	// Return tuple of results
-	py::tuple returns = py::make_tuple(Lp_np, Li_np, Lx_np, D_np, Dinv_np, P_np, Pinv_np);
+	py::tuple returns = py::make_tuple(Lp_np, Li_np, Lx_np, D_np, Dinv_np, P_np);
 
 	return returns;
 
@@ -160,14 +118,17 @@ const py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast> P_py) {
 	auto Lx = static_cast<QDLDL_float *>(Lx_py.request().ptr);
 	auto Dinv = static_cast<QDLDL_float *>(Dinv_py.request().ptr);
 	auto P = static_cast<QDLDL_int *>(P_py.request().ptr);
+	auto work = new QDLDL_float[n];
 
     // Create solution vector
 	py::array_t<QDLDL_float> x_np = py::array_t<QDLDL_float>(n);
 	QDLDL_float * x = static_cast<QDLDL_float *>(x_np.request().ptr);
 
-    permute_x(n, x, b, P);
-    QDLDL_solve(n, Lp, Li, Lx, Dinv, x);
-    permutet_x(n, x, x, P);
+    permute_x(n, work, b, P);
+    QDLDL_solve(n, Lp, Li, Lx, Dinv, work);
+    permutet_x(n, x, work, P);
+
+	delete [] work;
 
 	return x_np;
 }

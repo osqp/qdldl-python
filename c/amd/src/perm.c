@@ -20,20 +20,17 @@ QDLDL_int cumsum(QDLDL_int *p, QDLDL_int *c, QDLDL_int n) {
 
 
 void permute_x(QDLDL_int n, QDLDL_float * x, const QDLDL_float * b, const QDLDL_int * P) {
-    QDLDL_int j;
-    for (j = 0 ; j < n ; j++) x[j] = b[P[j]];
+    for (QDLDL_int j = 0 ; j < n ; j++) x[j] = b[P[j]];
 }
 
 
 void permutet_x(QDLDL_int n, QDLDL_float * x, const QDLDL_float * b, const QDLDL_int * P) {
-    QDLDL_int j;
-    for (j = 0 ; j < n ; j++) x[P[j]] = b[j];
+    for (QDLDL_int j = 0 ; j < n ; j++) x[P[j]] = b[j];
 }
 
 
 void pinv(QDLDL_int const *p, QDLDL_int * pinv, QDLDL_int n) {
-  QDLDL_int k;
-  for (k = 0; k < n; k++) pinv[p[k]] = k;  /* invert the permutation */
+  for (QDLDL_int k = 0; k < n; k++) pinv[p[k]] = k;  /* invert the permutation */
 }
 
 
@@ -70,7 +67,7 @@ void symperm(QDLDL_int n,
 
       if (i > j) continue;                             /* skip lower triangular
                                                           part of A*/
-      i2                         = pinv ? pinv[i] : i; /* row i of A is row i2
+      i2 = pinv ? pinv[i] : i;                         /* row i of A is row i2
                                                           of C */
       Ci[q = w[c_max(i2, j2)]++] = c_min(i2, j2);
 

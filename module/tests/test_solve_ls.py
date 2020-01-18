@@ -12,7 +12,7 @@ import numpy.testing as nptest
 class solve_ls(unittest.TestCase):
 
     def setUp(self):
-        np.random.seed(1)
+        np.random.seed(2)
 
     def test_basic_ls(self):
         n = 5
@@ -27,10 +27,8 @@ class solve_ls(unittest.TestCase):
         x_qdldl = m.solve(b)
         x_scipy = sla.spsolve(M, b)
 
-        import ipdb; ipdb.set_trace()
-
-        #  # Assert close
-        #  nptest.assert_array_almost_equal(x_qdldl, x_scipy)
+        # Assert close
+        nptest.assert_array_almost_equal(x_qdldl, x_scipy)
 
     def test_scalar_ls(self):
         M = spa.csc_matrix(np.random.randn(1, 1))

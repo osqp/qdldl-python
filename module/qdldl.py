@@ -54,7 +54,11 @@ def factor(A):
 
     A = spa.triu(A, format='csc')
 
-    Lp, Li, Lx, D, Dinv, P, Pinv = _qdldl.factor(A.indptr, A.indices, A.data)
+
+    if not A.has_sorted_indices:
+        A.sort_indices()
+
+    Lp, Li, Lx, D, Dinv, P = _qdldl.factor(A.indptr, A.indices, A.data)
 
     return QDLDLFactor(n, Lx, Li, Lp, D, Dinv, P)
 
