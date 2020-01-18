@@ -134,6 +134,6 @@ const py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast> P_py) {
 }
 
 void init_qdldl_wrapper(py::module &m){
-  m.def("factor", &py_factor);
-  m.def("solve", &py_solve);
+  m.def("factor", &py_factor, py::call_guard<py::gil_scoped_release>());
+  m.def("solve", &py_solve, py::call_guard<py::gil_scoped_release>());
 }

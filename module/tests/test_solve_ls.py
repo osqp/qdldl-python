@@ -3,6 +3,7 @@ import scipy.sparse as spa
 import scipy.sparse.linalg as sla
 from .utils import random_psd
 import numpy as np
+from multiprocessing.pool import ThreadPool
 
 # Unit Test
 import unittest
@@ -40,3 +41,37 @@ class solve_ls(unittest.TestCase):
 
         # Assert close
         nptest.assert_array_almost_equal(x_qdldl, x_scipy)
+
+    def test_thread(self):
+
+        n = 10
+        N = 10
+
+        def get_random_ls(n):
+            A = random_psd(n, n)
+            B = random_psd(n, n)
+            C = - random_psd(n, n)
+            M = spa.bmat([[A, B.T], [B, C]], format='csc')
+            b = np.random.randn(n + n)
+            return M, b
+
+        ls = [get_random_ls(n) for _ in range(N)]
+
+        # Solve in loop with scipy
+        res_scipy = []
+        for (M, b) in ls:
+            res_scipy.append(sla.spsolve(M, b))
+
+        # Solve with threads
+        def solve_qdldl(M, b):
+            return qdldl.factor(M).solve(b)
+
+        with ThreadPool(processes=2) as pool:
+            res_qdldl = pool.starmap(solve_qdldl, ls)
+
+        # Compare
+        for i in range(N):
+            nptest.assert_array_almost_equal(res_scipy[i],
+                                             res_qdldl[i])
+
+
