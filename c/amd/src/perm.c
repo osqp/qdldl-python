@@ -42,6 +42,7 @@ void symperm(QDLDL_int n,
 			 QDLDL_int * Ci,
 			 QDLDL_float * Cx,
 			 const QDLDL_int * pinv,
+			 QDLDL_int * AtoC,
 			 QDLDL_int * w){
   QDLDL_int i, j, p, q, i2, j2;
 
@@ -73,6 +74,15 @@ void symperm(QDLDL_int n,
 
       if (Cx) Cx[q] = Ax[p];
 
+	  if (AtoC) { // If vector AtoC passed, store values of the mappings
+        AtoC[p] = q;
+      }
+
     }
   }
+}
+
+
+void update_A(QDLDL_int Anz, QDLDL_float * Apermx, QDLDL_float * Anewx, const QDLDL_int *AtoAperm) {
+  for (QDLDL_int i = 0; i < Anz; i++) Apermx[AtoAperm[i]] = Anewx[i];
 }

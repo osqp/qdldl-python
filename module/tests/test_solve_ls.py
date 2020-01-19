@@ -74,4 +74,29 @@ class solve_ls(unittest.TestCase):
             nptest.assert_array_almost_equal(res_scipy[i],
                                              res_qdldl[i])
 
-
+    #  def test_update(self):
+    #      n = 5
+    #      A = random_psd(n, n)
+    #      B = random_psd(n, n)
+    #      C = - random_psd(n, n)
+    #      M = spa.bmat([[A, B.T], [B, C]], format='csc')
+    #      b = np.random.randn(n + n)
+    #
+    #      F = qdldl.factor(M)
+    #
+    #      x_first_scipy = sla.spsolve(M, b)
+    #      x_first_qdldl = F.solve(b)
+    #
+    #
+    #      # Update
+    #      M.data = M.data + 0.1 * np.random.randn(M.nnz)
+    #      x_second_scipy = sla.spsolve(M, b)
+    #
+    #      #  F.update(spa.triu(M).data)
+    #      #  x_second_qdldl = F.solve(b)
+    #
+    #      import ipdb; ipdb.set_trace()
+    #
+    #
+    #
+    #

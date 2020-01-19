@@ -16,6 +16,7 @@ void symperm(QDLDL_int n,
 			 QDLDL_int * Ci,
 			 QDLDL_float * Cx,
 			 const QDLDL_int * pinv,
+			 QDLDL_int * AtoC,
 			 QDLDL_int * w);
 
 
@@ -33,6 +34,8 @@ void permute_x(QDLDL_int n, QDLDL_float * x, const QDLDL_float * b, const QDLDL_
 void permutet_x(QDLDL_int n, QDLDL_float * x, const QDLDL_float * b, const QDLDL_int * P);
 
 
+/* Update permuted matrix A with Anewx */
+void update_A(QDLDL_int Anz, QDLDL_float * Apermx, QDLDL_float * Anewx, const QDLDL_int *AtoAperm);
 
 
 #ifdef __cplusplus
