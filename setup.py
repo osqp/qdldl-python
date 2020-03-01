@@ -67,9 +67,10 @@ class build_ext_qdldl(build_ext):
     def build_extensions(self):
 
         # Create build directory
-        if os.path.exists(qdldl_build_dir):
-            sh.rmtree(qdldl_build_dir)
-        os.makedirs(qdldl_build_dir)
+        if not os.path.exists(qdldl_build_dir):
+        #      sh.rmtree(qdldl_build_dir)
+        #  else:
+            os.makedirs(qdldl_build_dir)
         os.chdir(qdldl_build_dir)
 
         try:
