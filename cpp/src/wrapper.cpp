@@ -5,6 +5,26 @@
 namespace py = pybind11;
 
 
+class PySolver : public qdldl::Solver{
+
+	public:
+		// Inherit the constructors
+		using qdldl::Solver::Solver;
+
+
+		// Overload functions to make python ones
+		// NB. https://pybind11.readthedocs.io/en/stable/reference.html#c.PYBIND11_OVERLOAD
+
+
+
+
+
+}
+
+
+
+
+
 qdldl::Solver py_qdldl_solver(
 		const py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast> Ap_py,
 		const py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast> Ai_py,
