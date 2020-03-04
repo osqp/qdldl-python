@@ -1,52 +1,50 @@
 #include <pybind11/pybind11.h>
+// #include <pybind11/factory.h>
 #include <pybind11/numpy.h>
 #include "qdldl.hpp"
 
 namespace py = pybind11;
+using namespace py::literals; // to bring in the `_a` literal
 
 
-class PySolver : public qdldl::Solver{
+class PySolver{
 
 	public:
-		// Inherit the constructors
-		using qdldl::Solver::Solver;
+		PySolver(py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast> Ap_py,
+				 py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast> Ai_py,
+			     py::array_t<QDLDL_float, py::array::c_style | py::array::forcecast> Ax_py);
+		py::array solve(py::array_t<QDLDL_float, py::array::c_style | py::array::forcecast> b_py);
+		~PySolver();
 
+	private:
+		std::unique_ptr<qdldl::Solver> s;
 
-		// Overload functions to make python ones
-		// NB. https://pybind11.readthedocs.io/en/stable/reference.html#c.PYBIND11_OVERLOAD
-
-
-
-
-
-}
-
+};
 
 
 
+PySolver::PySolver(
+		py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast> Ap_py,
+		py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast> Ai_py,
+		py::array_t<QDLDL_float, py::array::c_style | py::array::forcecast> Ax_py){
 
-qdldl::Solver py_qdldl_solver(
-		const py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast> Ap_py,
-		const py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast> Ai_py,
-		const py::array_t<QDLDL_float, py::array::c_style | py::array::forcecast> Ax_py){
-
-
-	// Extract arrays
 	QDLDL_int nx = Ap_py.request().size - 1;
-	auto Ap = static_cast<QDLDL_int *>(Ap_py.request().ptr);
-	auto Ai = static_cast<QDLDL_int *>(Ai_py.request().ptr);
-	auto Ax = static_cast<QDLDL_float *>(Ax_py.request().ptr);
+	QDLDL_int * Ap = (QDLDL_int *)Ap_py.request().ptr;
+	QDLDL_int * Ai = (QDLDL_int *)Ai_py.request().ptr;
+	QDLDL_float * Ax = (QDLDL_float *)Ax_py.request().ptr;
 
-	return qdldl::Solver(nx, Ap, Ai, Ax);
+	s = std::unique_ptr<qdldl::Solver>(new qdldl::Solver(nx, Ap, Ai, Ax));
+
 }
 
-py::array_t<QDLDL_float> py_solve(
+
+py::array PySolver::solve(
 		const py::array_t<QDLDL_float, py::array::c_style | py::array::forcecast> b_py){
 
 	auto b = static_cast<QDLDL_float *>(b_py.request().ptr);
-	auto x = solve(b);
+	auto x = s->solve(b);
 
-    return py::array(n, x);
+    return py::array(s->nx, x);
 }
 
 
@@ -238,14 +236,11 @@ py::array_t<QDLDL_float> py_solve(
 
 
 
-
-PYBIND11_MODULE(_qdldl, m) {
-  m.doc() = "QDLDL low level wrapper";
-  py::class_<qdldl::Solver>(m, "Solver")
-	  .def(py::init(&py_qdldl_solver))
-	  .def("solve", &py_qdldl_solve);
-
-
+PYBIND11_MODULE(qdldl, m) {
+  m.doc() = "QDLDL wrapper";
+  py::class_<PySolver>(m, "PySolver")
+	  .def(py::init<py::array_t<QDLDL_int>, py::array_t<QDLDL_int>, py::array_t<QDLDL_float>>())
+	  .def("solve", &PySolver::solve);
   // m.def("factor", &py_factor
   //         // , py::call_guard<py::gil_scoped_release>()
   //         );

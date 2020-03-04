@@ -29,13 +29,14 @@ Solver::Solver(QDLDL_int n, QDLDL_int * Ap, QDLDL_int *Ai, QDLDL_float * Ax){
 	P = new QDLDL_int[n];
 	Pinv = new QDLDL_int[n];
 
+
 	// Permutation
-	QDLDL_int amd_status = amd_l_order(n, Ap, Ai, P, NULL, NULL);
+	QDLDL_int amd_status = amd_l_order(nx, Ap, Ai, P, NULL, NULL);
 	if (amd_status < 0)
 		throw std::runtime_error(std::string("Error in AMD computation ") + std::to_string(amd_status));
 
 	// No permutation
-	for (int i = 0; i < n; i++){
+	for (int i = 0; i < nx; i++){
 		P[i] = i;
 	}
 
@@ -105,4 +106,23 @@ void Solver::update(QDLDL_float * Anew_x){
 
 }
 
+Solver::~Solver(){
 
+	delete [] Lp;
+	delete [] Li;
+	delete [] Lx;
+	delete [] D;
+	delete [] Dinv;
+	delete [] P;
+	delete [] Pinv;
+	delete [] etree;
+	delete [] Lnz;
+	delete [] iwork;
+	delete [] bwork;
+	delete [] fwork;
+	delete [] Aperm_p;
+	delete [] Aperm_i;
+	delete [] Aperm_x;
+	delete [] A2Aperm;
+
+}

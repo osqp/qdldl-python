@@ -1,2 +1,2 @@
-from .qdldl import QDLDLFactor, factor
+#  from qdldl.factor import factor
 #  from qdldl._qdldl import factor

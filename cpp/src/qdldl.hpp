@@ -2,15 +2,8 @@
 #include "qdldl/include/qdldl.h"
 #include "amd/include/amd.h"
 #include "amd/include/perm.h"
-
 #include <string>
-
-// #include <stdlib.h>
-// #include <pybind11/pybind11.h>
-// #include <pybind11/numpy.h>
-//
-//
-// namespace py = pybind11;
+#include <iostream>
 
 
 namespace qdldl {
@@ -18,9 +11,6 @@ namespace qdldl {
 class Solver {
 
 	private:
-		QDLDL_int nx; // Size
-		QDLDL_int nnz; // Number of nonzero elements in the matrix
-
 		// Matrix L
 		QDLDL_int * Lp;
 		QDLDL_int * Li;
@@ -48,9 +38,13 @@ class Solver {
 		QDLDL_int * A2Aperm;
 
 	public:
+		QDLDL_int nx; // Size
+		QDLDL_int nnz; // Number of nonzero elements in the matrix
+
 		Solver(QDLDL_int n, QDLDL_int * Ap, QDLDL_int *Ai, QDLDL_float * Ax);
 		QDLDL_float * solve(QDLDL_float * b);
 		void update(QDLDL_float * Anew_x);
+		~Solver();
 
 };
 

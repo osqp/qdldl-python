@@ -114,7 +114,7 @@ if sys.platform == 'darwin':
         if python_target < '10.9' and current_system >= '10.9':
             os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
 
-_qdldl = Extension('qdldl._qdldl',
+qdldl = Extension('qdldl.qdldl',
                    sources= glob(os.path.join('cpp', 'src', '*.cpp')),
                    include_dirs=[os.path.join('c'),
                                  os.path.join('c', 'qdldl', 'include'),
@@ -149,5 +149,5 @@ setup(name='qdldl',
       url="https://github.com/oxfordcontrol/qdldlpy/",
       cmdclass={'build_ext': build_ext_qdldl},
       packages=packages,
-      ext_modules=[_qdldl],
+      ext_modules=[qdldl],
       )
