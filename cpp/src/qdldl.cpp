@@ -29,7 +29,6 @@ Solver::Solver(QDLDL_int n, QDLDL_int * Ap, QDLDL_int *Ai, QDLDL_float * Ax){
 	P = new QDLDL_int[n];
 	Pinv = new QDLDL_int[n];
 
-
 	// Permutation
 	QDLDL_int amd_status = amd_l_order(nx, Ap, Ai, P, NULL, NULL);
 	if (amd_status < 0)
@@ -108,21 +107,21 @@ void Solver::update(QDLDL_float * Anew_x){
 
 Solver::~Solver(){
 
-	delete [] Lp;
-	delete [] Li;
-	delete [] Lx;
-	delete [] D;
-	delete [] Dinv;
-	delete [] P;
-	delete [] Pinv;
-	delete [] etree;
-	delete [] Lnz;
-	delete [] iwork;
-	delete [] bwork;
-	delete [] fwork;
-	delete [] Aperm_p;
-	delete [] Aperm_i;
-	delete [] Aperm_x;
-	delete [] A2Aperm;
+	// delete [] Lp;
+	// delete [] Li;
+	// delete [] Lx;
+	// delete [] D;
+	// delete [] Dinv;
+	// delete [] P;
+	// delete [] Pinv;
+	// delete [] etree;
+	// delete [] Lnz;
+	// delete [] iwork;
+	// delete [] bwork;
+	// delete [] fwork;
+	// delete [] Aperm_p;
+	// delete [] Aperm_i;
+	// delete [] Aperm_x;
+	// delete [] A2Aperm;
 
 }
