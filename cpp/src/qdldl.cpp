@@ -137,23 +137,23 @@ void Solver::update(QDLDL_float * Anew_x){
 
 }
 
-// Solver::~Solver(){
-//
-//     delete [] Lp;
-//     // delete [] Li;
-//     // delete [] Lx;
-//     // delete [] D;
-//     // delete [] Dinv;
-//     // delete [] P;
-//     // delete [] Pinv;
-//     // delete [] etree;
-//     // delete [] Lnz;
-//     // delete [] iwork;
-//     // delete [] bwork;
-//     // delete [] fwork;
-//     // delete [] Aperm_p;
-//     // delete [] Aperm_i;
-//     // delete [] Aperm_x;
-//     // delete [] A2Aperm;
-//
-// }
+Solver::~Solver(){
+
+	delete [] Lp;
+	delete [] Li;
+	delete [] Lx;
+	delete [] D;
+	delete [] Dinv;
+	delete [] P;
+	delete [] Pinv;
+	delete [] etree;
+	delete [] Lnz;
+	delete [] iwork;
+	delete [] bwork;
+	delete [] fwork;
+	delete [] Aperm_p;
+	delete [] Aperm_i;
+	delete [] Aperm_x;
+	delete [] A2Aperm;
+
+}
