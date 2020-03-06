@@ -1,7 +1,3 @@
-// DEBUG
-#include <pybind11/pybind11.h>
-namespace py = pybind11;
-
 #include "qdldl.hpp"
 
 using namespace qdldl;
@@ -70,9 +66,6 @@ Solver::Solver(QDLDL_int n, QDLDL_int * Ap, QDLDL_int *Ai, QDLDL_float * Ax){
 			Lp, Li, Lx,
 			D, Dinv, Lnz,
 			etree, bwork, iwork, fwork);
-
-	py::print("Factor status");
-	py::print(factor_status);
 
 	if (factor_status < 0){
 		throw std::runtime_error(std::string("Error in matric factorization. Input matrix is not quasi-definite, factor_status = ") + std::to_string(factor_status));

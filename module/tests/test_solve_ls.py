@@ -99,8 +99,6 @@ class solve_ls(unittest.TestCase):
         C = - random_psd(n, n)
         M = spa.bmat([[A, B.T], [B, C]], format='csc')
 
-        print("M before", M.todense())
-
         b = np.random.randn(n + n)
 
         F = qdldl.factor(M)
@@ -110,7 +108,8 @@ class solve_ls(unittest.TestCase):
 
         # Update
         M.data = M.data + 0.1 * np.random.randn(M.nnz)
-        print("M after", M.todense())
+        # Symmetrize matrix
+        M =.5 * (M + M.T)
         x_second_scipy = sla.spsolve(M, b)
 
         x_second_qdldl_scratch = qdldl.factor(M).solve(b)
@@ -120,8 +119,6 @@ class solve_ls(unittest.TestCase):
 
         F.update(M_triu.data)
         x_second_qdldl = F.solve(b)
-
-        import ipdb; ipdb.set_trace()
 
         nptest.assert_allclose(x_second_scipy,
                                x_second_qdldl,

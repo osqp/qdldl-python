@@ -32,9 +32,11 @@ To solve the linear system for a right-hand side `b`, just write
 x = F.solve(b)
 ```
 
-##  TODO
+To update the factorization without changing the sparsity pattern of `A` you can run
 
-- [ ] Implement C++ object storing factorization
-- [ ] Wrap object in pybind11
-- [ ] Test functions + updates
-- [ ] Test GIL release
+``
+F.update(A_new.data())
+``
+
+where `A` is in csr format.
+

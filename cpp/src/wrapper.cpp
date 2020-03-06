@@ -32,9 +32,9 @@ PySolver::PySolver(
 	QDLDL_int * Ai = (QDLDL_int *)Ai_py.data();
 	QDLDL_float * Ax = (QDLDL_float *)Ax_py.data();
 
-	// py::gil_scoped_release release;
+	py::gil_scoped_release release;
 	s = std::make_unique<qdldl::Solver>(nx, Ap, Ai, Ax);
-    // py::gil_scoped_acquire acquire;
+	py::gil_scoped_acquire acquire;
 
 }
 
@@ -73,7 +73,4 @@ PYBIND11_MODULE(qdldl, m) {
 			     py::array_t<QDLDL_float, py::array::c_style | py::array::forcecast>>())
 	  .def("solve", &PySolver::solve)
 	  .def("update", &PySolver::update);
-  // m.def("factor", &py_factor
-  //         // , py::call_guard<py::gil_scoped_release>()
-  //         );
 }
