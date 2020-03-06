@@ -1,3 +1,7 @@
+// DEBUG
+#include <pybind11/pybind11.h>
+namespace py = pybind11;
+
 #include "qdldl.hpp"
 
 using namespace qdldl;
@@ -36,7 +40,7 @@ Solver::Solver(QDLDL_int n, QDLDL_int * Ap, QDLDL_int *Ai, QDLDL_float * Ax){
 		throw std::runtime_error(std::string("Error in AMD computation ") + std::to_string(amd_status));
 
 	// DEBUG NO PERMUTATIOn
-	// for (int i=0; i < nx; i++) P[i] = i;
+	for (int i=0; i < nx; i++) P[i] = i;
 
 	pinv(P, Pinv, n); // Compute inverse permutation
 
@@ -54,7 +58,7 @@ Solver::Solver(QDLDL_int n, QDLDL_int * Ap, QDLDL_int *Ai, QDLDL_float * Ax){
     int sum_Lnz = QDLDL_etree(n, Aperm_p, Aperm_i, iwork, Lnz, etree);
 
 	if (sum_Lnz < 0)
-		throw std::runtime_error(std::string("Input matrix is not quasi-definite, sum_Lnz = ") + std::to_string(sum_Lnz));
+		throw std::runtime_error(std::string("Error in computing elimination tree. Matrix not properly upper-triangular, sum_Lnz = ") + std::to_string(sum_Lnz));
 
 	// Allocate factor
 	Li = new QDLDL_int[sum_Lnz];
@@ -62,10 +66,17 @@ Solver::Solver(QDLDL_int n, QDLDL_int * Ap, QDLDL_int *Ai, QDLDL_float * Ax){
 
 
 	// Compute numeric factorization
-    QDLDL_factor(nx, Aperm_p, Aperm_i, Aperm_x,
-			     Lp, Li, Lx,
-				 D, Dinv, Lnz,
-				 etree, bwork, iwork, fwork);
+	int factor_status = QDLDL_factor(nx, Aperm_p, Aperm_i, Aperm_x,
+			Lp, Li, Lx,
+			D, Dinv, Lnz,
+			etree, bwork, iwork, fwork);
+
+	py::print("Factor status");
+	py::print(factor_status);
+
+	if (factor_status < 0){
+		throw std::runtime_error(std::string("Error in matric factorization. Input matrix is not quasi-definite, factor_status = ") + std::to_string(factor_status));
+	}
 
 
     // Delete permutaton workspace

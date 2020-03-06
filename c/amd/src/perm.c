@@ -83,6 +83,7 @@ void symperm(QDLDL_int n,
 }
 
 
-void update_A(QDLDL_int Anz, QDLDL_float * Apermx, QDLDL_float * Anewx, const QDLDL_int *AtoAperm) {
+void update_A(QDLDL_int Anz, QDLDL_float * Apermx,
+		      QDLDL_float * Anewx, const QDLDL_int *AtoAperm) {
   for (QDLDL_int i = 0; i < Anz; i++) Apermx[AtoAperm[i]] = Anewx[i];
 }
