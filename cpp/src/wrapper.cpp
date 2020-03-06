@@ -32,7 +32,9 @@ PySolver::PySolver(
 	QDLDL_int * Ai = (QDLDL_int *)Ai_py.data();
 	QDLDL_float * Ax = (QDLDL_float *)Ax_py.data();
 
+	py::gil_scoped_release release;
 	s = std::make_unique<qdldl::Solver>(nx, Ap, Ai, Ax);
+    py::gil_scoped_acquire acquire;
 
 }
 
@@ -40,8 +42,11 @@ PySolver::PySolver(
 py::array PySolver::solve(
 		const py::array_t<QDLDL_float, py::array::c_style | py::array::forcecast> b_py){
 
-	auto b = (QDLDL_float *)b_py.request().ptr;
+	auto b = (QDLDL_float *)b_py.data();
+
+	py::gil_scoped_release release;
 	auto x = s->solve(b);
+    py::gil_scoped_acquire acquire;
 
     return py::array(s->nx, x);
 }
@@ -49,8 +54,11 @@ py::array PySolver::solve(
 void PySolver::update(
 		const py::array_t<QDLDL_float, py::array::c_style | py::array::forcecast> Anew_x_py){
 
-	auto Anew_x = (QDLDL_float *)Anew_x_py.request().ptr;
+	auto Anew_x = (QDLDL_float *)Anew_x_py.data();
+
+	py::gil_scoped_release release;
 	s->update(Anew_x);
+    py::gil_scoped_acquire acquire;
 }
 
 

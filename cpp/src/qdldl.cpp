@@ -1,7 +1,3 @@
-// DEBUG
-#include <pybind11/pybind11.h>
-namespace py = pybind11;
-
 #include "qdldl.hpp"
 
 using namespace qdldl;
@@ -9,7 +5,6 @@ using namespace qdldl;
 
 
 Solver::Solver(QDLDL_int n, QDLDL_int * Ap, QDLDL_int *Ai, QDLDL_float * Ax){
-	// factor and initialize Solver
 
 	// Dimension
 	nx = n;
@@ -40,24 +35,8 @@ Solver::Solver(QDLDL_int n, QDLDL_int * Ap, QDLDL_int *Ai, QDLDL_float * Ax){
 	if (amd_status < 0)
 		throw std::runtime_error(std::string("Error in AMD computation ") + std::to_string(amd_status));
 
-
-	// cout << "Ap = [ ";
-	// for (int i = 0; i < nx + 1; i++) cout << Ap[i] << " ";
-	// cout << "]\n";
-	// cout << "Ai = [ ";
-	// for (int i = 0; i < nnz; i++) cout << Ai[i] << " ";
-	// cout << "]\n";
-	// cout << "Ax = [ ";
-	// for (int i = 0; i < nnz; i++) cout << Ax[i] << " ";
-	// cout << "]\n";
-	//
-
-	py::print("Here 1");
-
-	// No permutation
-	for (int i = 0; i < nx; i++){
-		P[i] = i;
-	}
+	// DEBUG NO PERMUTATIOn
+	// for (int i=0; i < nx; i++) P[i] = i;
 
 	pinv(P, Pinv, n); // Compute inverse permutation
 
@@ -65,25 +44,17 @@ Solver::Solver(QDLDL_int n, QDLDL_int * Ap, QDLDL_int *Ai, QDLDL_float * Ax){
 	Aperm_p = new QDLDL_int[n+1];
 	Aperm_i = new QDLDL_int[nnz];
 	Aperm_x = new QDLDL_float[nnz];
-	A2Aperm = new QDLDL_int[n];
+	A2Aperm = new QDLDL_int[nnz];
 	QDLDL_int * work_perm = new QDLDL_int[n]();  // Initialize to 0
 
 	// Permute A
-	// symperm(n, Ap, Ai, Ax, Aperm_p, Aperm_i, Aperm_x, Pinv, A2Aperm, work_perm);
-	// DEBUG
-	std::memcpy(Aperm_p, Ap, (n + 1) * sizeof(QDLDL_int));
-	std::memcpy(Aperm_i, Ai, nnz * sizeof(QDLDL_int));
-	std::memcpy(Aperm_x, Ax, nnz * sizeof(QDLDL_int));
-
-	py::print("Here 2");
+	symperm(n, Ap, Ai, Ax, Aperm_p, Aperm_i, Aperm_x, Pinv, A2Aperm, work_perm);
 
 	// Compute elimination tree
     int sum_Lnz = QDLDL_etree(n, Aperm_p, Aperm_i, iwork, Lnz, etree);
 
 	if (sum_Lnz < 0)
 		throw std::runtime_error(std::string("Input matrix is not quasi-definite, sum_Lnz = ") + std::to_string(sum_Lnz));
-
-	py::print("Here 3");
 
 	// Allocate factor
 	Li = new QDLDL_int[sum_Lnz];
@@ -96,13 +67,9 @@ Solver::Solver(QDLDL_int n, QDLDL_int * Ap, QDLDL_int *Ai, QDLDL_float * Ax){
 				 D, Dinv, Lnz,
 				 etree, bwork, iwork, fwork);
 
-	py::print("Here 4");
-
 
     // Delete permutaton workspace
 	delete [] work_perm;
-
-	py::print("Here 5");
 
 }
 

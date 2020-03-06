@@ -33,9 +33,7 @@ class get_pybind_include(object):
         return pybind11.get_include(self.user)
 
 # Add parameters to cmake_args and define_macros
-cmake_args = ["-DUNITTESTS=OFF",
-        "-DCMAKE_BUILD_TYPE=Debug"
-        ]
+cmake_args = ["-DUNITTESTS=OFF"]
 cmake_build_flags = []
 lib_subdir = []
 
