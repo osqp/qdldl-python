@@ -26,14 +26,13 @@ def factor(A):
     if not A.has_sorted_indices:
         A.sort_indices()
 
-    #  return PySolver(np.ascontiguousarray(A.indptr),
-    #                  np.ascontiguousarray(A.indices),
-    #                  np.ascontiguousarray(A.data))
-
-
     print("Ap ", A.indptr)
     print("Ai ", A.indices)
     print("Ax ", A.data)
+
+    #  return PySolver(np.ascontiguousarray(A.indptr),
+                    #  np.ascontiguousarray(A.indices),
+                    #  np.ascontiguousarray(A.data))
 
     return PySolver(A.indptr, A.indices, A.data)
 

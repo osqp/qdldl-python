@@ -28,9 +28,9 @@ PySolver::PySolver(
 		py::array_t<QDLDL_float, py::array::c_style | py::array::forcecast> Ax_py){
 
 	QDLDL_int nx = Ap_py.request().size - 1;
-	QDLDL_int * Ap = (QDLDL_int *)Ap_py.request().ptr;
-	QDLDL_int * Ai = (QDLDL_int *)Ai_py.request().ptr;
-	QDLDL_float * Ax = (QDLDL_float *)Ax_py.request().ptr;
+	QDLDL_int * Ap = (QDLDL_int *)Ap_py.data();
+	QDLDL_int * Ai = (QDLDL_int *)Ai_py.data();
+	QDLDL_float * Ax = (QDLDL_float *)Ax_py.data();
 
 	s = std::make_unique<qdldl::Solver>(nx, Ap, Ai, Ax);
 
@@ -60,7 +60,9 @@ void PySolver::update(
 PYBIND11_MODULE(qdldl, m) {
   m.doc() = "QDLDL wrapper";
   py::class_<PySolver>(m, "PySolver")
-	  .def(py::init<py::array_t<QDLDL_int>, py::array_t<QDLDL_int>, py::array_t<QDLDL_float>>())
+	  .def(py::init<py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast>,
+				 py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast>,
+			     py::array_t<QDLDL_float, py::array::c_style | py::array::forcecast>>())
 	  .def("solve", &PySolver::solve)
 	  .def("update", &PySolver::update);
   // m.def("factor", &py_factor

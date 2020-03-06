@@ -27,11 +27,11 @@ class solve_ls(unittest.TestCase):
         #  import ipdb; ipdb.set_trace()
         m = qdldl.factor(M)
 
-        #  x_qdldl = m.solve(b)
-        #  x_scipy = sla.spsolve(M, b)
-        #
-        #  # Assert close
-        #  nptest.assert_array_almost_equal(x_qdldl, x_scipy)
+        x_qdldl = m.solve(b)
+        x_scipy = sla.spsolve(M, b)
+
+        # Assert close
+        nptest.assert_array_almost_equal(x_qdldl, x_scipy)
 
     def test_scalar_ls(self):
         M = spa.csc_matrix(np.random.randn(1, 1))
