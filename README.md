@@ -38,5 +38,5 @@ To update the factorization without changing the sparsity pattern of `A` you can
 F.update(A_new.data())
 ``
 
-where `A` is in csr format.
+where `A_new` is an upper-triangular matrix in csr format.
 

@@ -63,8 +63,6 @@ void PySolver::update(
 
 
 
-
-
 PYBIND11_MODULE(qdldl, m) {
   m.doc() = "QDLDL wrapper";
   py::class_<PySolver>(m, "PySolver")

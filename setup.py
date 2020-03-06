@@ -121,7 +121,7 @@ qdldl = Extension('qdldl.qdldl',
                                  get_pybind_include(),
                                  get_pybind_include(user=False)],
                    language='c++',
-                   extra_compile_args = compile_args + ['-std=c++14'] + ['-g'],
+                   extra_compile_args = compile_args + ['-std=c++14'],
                    extra_objects=[qdldl_lib])
 
 

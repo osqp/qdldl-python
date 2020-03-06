@@ -35,9 +35,6 @@ Solver::Solver(QDLDL_int n, QDLDL_int * Ap, QDLDL_int *Ai, QDLDL_float * Ax){
 	if (amd_status < 0)
 		throw std::runtime_error(std::string("Error in AMD computation ") + std::to_string(amd_status));
 
-	// DEBUG NO PERMUTATIOn
-	for (int i=0; i < nx; i++) P[i] = i;
-
 	pinv(P, Pinv, n); // Compute inverse permutation
 
 	// Allocate elements of A permuted
