@@ -44,7 +44,7 @@ class Solver {
 		Solver(QDLDL_int n, QDLDL_int * Ap, QDLDL_int *Ai, QDLDL_float * Ax);
 		QDLDL_float * solve(QDLDL_float * b);
 		void update(QDLDL_float * Anew_x);
-		~Solver();
+		// ~Solver();
 
 };
 

@@ -4,11 +4,10 @@
 #include "qdldl.hpp"
 
 namespace py = pybind11;
-using namespace py::literals; // to bring in the `_a` literal
+// using namespace py::literals; // to bring in the `_a` literal
 
 
 class PySolver{
-
 	public:
 		PySolver(py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast> Ap_py,
 				 py::array_t<QDLDL_int, py::array::c_style | py::array::forcecast> Ai_py,
@@ -41,7 +40,7 @@ PySolver::PySolver(
 py::array PySolver::solve(
 		const py::array_t<QDLDL_float, py::array::c_style | py::array::forcecast> b_py){
 
-	auto b = static_cast<QDLDL_float *>(b_py.request().ptr);
+	auto b = (QDLDL_float *)b_py.request().ptr;
 	auto x = s->solve(b);
 
     return py::array(s->nx, x);
@@ -50,7 +49,7 @@ py::array PySolver::solve(
 void PySolver::update(
 		const py::array_t<QDLDL_float, py::array::c_style | py::array::forcecast> Anew_x_py){
 
-	auto Anew_x = static_cast<QDLDL_float *>(Anew_x_py.request().ptr);
+	auto Anew_x = (QDLDL_float *)Anew_x_py.request().ptr;
 	s->update(Anew_x);
 }
 
