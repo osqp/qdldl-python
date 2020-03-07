@@ -1,4 +1,3 @@
-from __future__ import print_function
 import distutils.sysconfig as sysconfig
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
@@ -61,15 +60,14 @@ else:
 current_dir = os.getcwd()
 qdldl_dir = os.path.join(current_dir, 'c',)
 qdldl_build_dir = os.path.join(qdldl_dir, 'build')
-qdldl_lib = os.path.join('module', lib_name)
+qdldl_lib = [qdldl_build_dir, 'out'] + lib_subdir + [lib_name]
+qdldl_lib = os.path.join(*qdldl_lib)
 
 class build_ext_qdldl(build_ext):
     def build_extensions(self):
 
         # Create build directory
         if not os.path.exists(qdldl_build_dir):
-        #      sh.rmtree(qdldl_build_dir)
-        #  else:
             os.makedirs(qdldl_build_dir)
         os.chdir(qdldl_build_dir)
 
@@ -87,53 +85,38 @@ class build_ext_qdldl(build_ext):
         os.chdir(current_dir)
 
         # Copy static library to src folder
-        lib_origin = [qdldl_build_dir, 'out'] + lib_subdir + [lib_name]
-        lib_origin = os.path.join(*lib_origin)
-        print(lib_origin)
-        print(os.path.join('module',  lib_name))
-        copyfile(lib_origin, os.path.join('module',  lib_name))
+        #  qdldl_lib = [qdldl_build_dir, 'out'] + lib_subdir + [lib_name]
+        #  qdldl_lib = os.path.join(*lib_origin)
+        #  print(lib_origin)
+        #  print(os.path.join('module',  lib_name))
+        #  copyfile(lib_origin, os.path.join('module',  lib_name))
 
         # Run extension
         build_ext.build_extensions(self)
 
 
-# OLD Cython
-#  _qdldl = Extension('qdldl._qdldl',
-#          include_dirs=include_dirs,
-#          extra_objects=extra_objects,
-#          sources=['module/_qdldl.pyx'],
-#          extra_compile_args=compile_args)
-#  _qdldl.cython_directives = {'language_level': "3"} #all are Python-3
+#  if sys.platform == 'darwin':
+#      if 'MACOSX_DEPLOYMENT_TARGET' not in os.environ:
+#          current_system = distutils.version.LooseVersion(platform.mac_ver()[0])
+#          python_target = distutils.version.LooseVersion(
+#              distutils.sysconfig.get_config_var('MACOSX_DEPLOYMENT_TARGET'))
+#          if python_target < '10.9' and current_system >= '10.9':
+#              os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
 
-
-if sys.platform == 'darwin':
-    if 'MACOSX_DEPLOYMENT_TARGET' not in os.environ:
-        current_system = distutils.version.LooseVersion(platform.mac_ver()[0])
-        python_target = distutils.version.LooseVersion(
-            distutils.sysconfig.get_config_var('MACOSX_DEPLOYMENT_TARGET'))
-        if python_target < '10.9' and current_system >= '10.9':
-            os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
-
-qdldl = Extension('qdldl.qdldl',
-                   sources= glob(os.path.join('cpp', 'src', '*.cpp')),
+qdldl = Extension('qdldl',
+                   sources= glob(os.path.join('cpp', '*.cpp')),
                    include_dirs=[os.path.join('c'),
                                  os.path.join('c', 'qdldl', 'include'),
                                  get_pybind_include(),
                                  get_pybind_include(user=False)],
                    language='c++',
-                   extra_compile_args = compile_args + ['-std=c++14'],
+                   extra_compile_args = compile_args + ['-std=c++14'] + ['-g'],
                    extra_objects=[qdldl_lib])
 
 
-packages = ['qdldl',
-            'qdldl.tests']
-
-
-# Read README.rst file
 def readme():
     with open('README.md') as f:
         return f.read()
-
 
 setup(name='qdldl',
       version='0.0.1',
@@ -148,6 +131,5 @@ setup(name='qdldl',
       license='Apache 2.0',
       url="https://github.com/oxfordcontrol/qdldlpy/",
       cmdclass={'build_ext': build_ext_qdldl},
-      packages=packages,
       ext_modules=[qdldl],
       )

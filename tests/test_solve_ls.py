@@ -26,7 +26,7 @@ class solve_ls(unittest.TestCase):
         b = np.random.randn(n + n)
 
         #  import ipdb; ipdb.set_trace()
-        m = qdldl.factor(M)
+        m = qdldl.Solver(M)
 
         x_qdldl = m.solve(b)
         x_scipy = sla.spsolve(M, b)
@@ -38,7 +38,7 @@ class solve_ls(unittest.TestCase):
         M = spa.csc_matrix(np.random.randn(1, 1))
         b = np.random.randn(1)
 
-        F = qdldl.factor(M)
+        F = qdldl.Solver(M)
         x_qdldl = F.solve(b)
         x_scipy = sla.spsolve(M, b)
 
@@ -66,7 +66,7 @@ class solve_ls(unittest.TestCase):
             res_scipy.append(sla.spsolve(M, b))
 
         def solve_qdldl(M, b):
-            return qdldl.factor(M).solve(b)
+            return qdldl.Solver(M).solve(b)
 
         # Solve with qdldl serial
         t_serial = time()
@@ -101,7 +101,7 @@ class solve_ls(unittest.TestCase):
 
         b = np.random.randn(n + n)
 
-        F = qdldl.factor(M)
+        F = qdldl.Solver(M)
 
         x_first_scipy = sla.spsolve(M, b)
         x_first_qdldl = F.solve(b)
@@ -112,12 +112,12 @@ class solve_ls(unittest.TestCase):
         M =.5 * (M + M.T)
         x_second_scipy = sla.spsolve(M, b)
 
-        x_second_qdldl_scratch = qdldl.factor(M).solve(b)
+        x_second_qdldl_scratch = qdldl.Solver(M).solve(b)
 
-        M_triu = spa.triu(M, format='csc')
-        M_triu.sort_indices()
-
-        F.update(M_triu.data)
+        #  M_triu = spa.triu(M, format='csc')
+        #  M_triu.sort_indices()
+        #  F.update(M_triu.data)
+        F.update(M)
         x_second_qdldl = F.solve(b)
 
         nptest.assert_allclose(x_second_scipy,
