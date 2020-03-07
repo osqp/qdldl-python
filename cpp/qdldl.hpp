@@ -2,6 +2,7 @@
 #include "qdldl/include/qdldl.h"
 #include "amd/include/amd.h"
 #include "amd/include/perm.h"
+#include <exception>
 #include <string>
 
 
