@@ -20,7 +20,7 @@ Initialize the factorization with
 
 ```
 import qdldl
-F = qdldl.factor(A)
+F = qdldl.Solver(A)
 ```
 
 where `A` must be a square quasi-definite matrix in [scipy sparse CSC
@@ -35,8 +35,8 @@ x = F.solve(b)
 To update the factorization without changing the sparsity pattern of `A` you can run
 
 ``
-F.update(A_new.data())
+F.update(A_new)
 ``
 
-where `A_new` is an upper-triangular matrix in csr format.
+where `A_new` is a sparse matrix in CSR format with the same sparsity pattern as `A`.
 
