@@ -95,13 +95,13 @@ class build_ext_qdldl(build_ext):
         build_ext.build_extensions(self)
 
 
-#  if sys.platform == 'darwin':
-#      if 'MACOSX_DEPLOYMENT_TARGET' not in os.environ:
-#          current_system = distutils.version.LooseVersion(platform.mac_ver()[0])
-#          python_target = distutils.version.LooseVersion(
-#              distutils.sysconfig.get_config_var('MACOSX_DEPLOYMENT_TARGET'))
-#          if python_target < '10.9' and current_system >= '10.9':
-#              os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
+if sys.platform == 'darwin':
+    if 'MACOSX_DEPLOYMENT_TARGET' not in os.environ:
+        current_system = distutils.version.LooseVersion(platform.mac_ver()[0])
+        python_target = distutils.version.LooseVersion(
+            distutils.sysconfig.get_config_var('MACOSX_DEPLOYMENT_TARGET'))
+        if python_target < '10.9' and current_system >= '10.9':
+            os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
 
 qdldl = Extension('qdldl',
                    sources= glob(os.path.join('cpp', '*.cpp')),
