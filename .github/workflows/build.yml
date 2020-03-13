@@ -34,10 +34,10 @@ jobs:
         python -m cibuildwheel --output-dir wheelhouse
 
     - name: Upload artifact
-        on:
-          push:
-            tags:
-              - v*
-        run: |
-          python -m twine upload wheelhouse/*.whl
+      on:
+        push:
+          tags:
+            - v*
+      run: |
+        python -m twine upload wheelhouse/*.whl
 
