@@ -77,7 +77,10 @@ PySolver::PySolver(py::object A){
 	QDLDL_float * Ax = (QDLDL_float *)Ax_py.data();
 
 	py::gil_scoped_release release;
-	s = std::make_unique<qdldl::Solver>(nx, Ap, Ai, Ax);
+	// TODO: Replace this line with the make_unique line below in the future.
+	// It needs C++14 but manylinux does not support it yet
+	this->s = std::unique_ptr<qdldl::Solver>(new qdldl::Solver(nx, Ap, Ai, Ax));
+	// s = std::make_unique<qdldl::Solver>(nx, Ap, Ai, Ax);
 	py::gil_scoped_acquire acquire;
 }
 
