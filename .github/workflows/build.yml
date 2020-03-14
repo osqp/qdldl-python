@@ -33,18 +33,7 @@ jobs:
       run: |
         python -m cibuildwheel --output-dir wheelhouse
 
-  publish:
-    needs: build_wheels
-    runs-on: ubuntu-latest
-    on:
-      push:
-        tags:
-          - v*
-    steps:
-      - name: Publish
-        env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        run: |
-          python -m twine upload wheelhouse/*.whl
-
+    - uses: actions/upload-artifact@v1
+      with:
+        name: wheels
+        path: ./wheelhouse
