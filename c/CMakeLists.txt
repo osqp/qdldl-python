@@ -3,6 +3,9 @@ cmake_minimum_required (VERSION 3.2)
 # Project name
 project (qdldl_amd)
 
+# Needed for compilation to succeed
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/out)
 
 add_subdirectory(qdldl EXCLUDE_FROM_ALL)
