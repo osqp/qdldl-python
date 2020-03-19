@@ -17,6 +17,7 @@ jobs:
 
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.0
+      if: startsWith(matrix.os,'windows')
 
     - uses: actions/setup-python@v1
       name: Install Python
