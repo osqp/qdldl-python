@@ -15,6 +15,9 @@ jobs:
       with:
         submodules: 'recursive'
 
+    # Setup MSVC C++ environment
+    - uses: ilammy/msvc-dev-cmd@v1
+
     - uses: actions/setup-python@v1
       name: Install Python
       with:
