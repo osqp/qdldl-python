@@ -17,6 +17,7 @@ jobs:
 
     - name: Initialize VS C++ environment
       if: startsWith(matrix.os,'windows')
+      shell: cmd
       run: |
         call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat
 
