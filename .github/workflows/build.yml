@@ -15,8 +15,8 @@ jobs:
       with:
         submodules: 'recursive'
 
-    # Setup MSVC C++ environment
-    - uses: ilammy/msvc-dev-cmd@v1
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.0
 
     - uses: actions/setup-python@v1
       name: Install Python
