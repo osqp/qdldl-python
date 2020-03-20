@@ -21,6 +21,7 @@ jobs:
 
     - name: Add Windows SDK
       shell: cmd
+      if: startsWith(matrix.os,'windows')
       run: |
         choco install windows-sdk-8.1
     # - name: Initialize VS C++ environment
