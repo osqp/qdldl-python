@@ -18,6 +18,11 @@ jobs:
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.0
       if: startsWith(matrix.os,'windows')
+
+    - name: Add Windows SDK
+      shell: cmd
+      run: |
+        choco install windows-sdk-8.1
     # - name: Initialize VS C++ environment
     #   shell: cmd
     #   run: |
