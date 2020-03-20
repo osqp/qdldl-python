@@ -44,7 +44,7 @@ jobs:
     - name: Build source
       if: startsWith(matrix.os, 'ubuntu')
       run: |
-        python -m setup.py sdist --dist-dir=wheelhouse
+        python setup.py sdist --dist-dir=wheelhouse
 
     - name: Upload artifacts to github
       uses: actions/upload-artifact@v1
