@@ -84,13 +84,6 @@ class build_ext_qdldl(build_ext):
         # Change directory back to the python interface
         os.chdir(current_dir)
 
-        # Copy static library to src folder
-        #  qdldl_lib = [qdldl_build_dir, 'out'] + lib_subdir + [lib_name]
-        #  qdldl_lib = os.path.join(*lib_origin)
-        #  print(lib_origin)
-        #  print(os.path.join('module',  lib_name))
-        #  copyfile(lib_origin, os.path.join('module',  lib_name))
-
         # Run extension
         build_ext.build_extensions(self)
 

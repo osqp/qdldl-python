@@ -19,8 +19,6 @@ class PySolver{
 };
 
 
-
-
 py::array PySolver::solve(
 		const py::array_t<QDLDL_float, py::array::c_style | py::array::forcecast> b_py){
 
