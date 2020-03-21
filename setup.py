@@ -112,7 +112,7 @@ def readme():
         return f.read()
 
 setup(name='qdldl',
-      version='0.0.1',
+      version='0.1.0',
       author='Bartolomeo Stellato, Paul Goulart, Goran Banjac',
       author_email='bartolomeo.stellato@gmail.com',
       description='QDLDL, a free LDL factorization routine.',
