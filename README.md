@@ -34,9 +34,9 @@ x = F.solve(b)
 
 To update the factorization without changing the sparsity pattern of `A` you can run
 
-``
+```
 F.update(A_new)
-``
+```
 
 where `A_new` is a sparse matrix in CSR format with the same sparsity pattern as `A`.
 

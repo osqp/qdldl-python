@@ -52,10 +52,20 @@ jobs:
         name: wheels
         path: ./wheelhouse
 
-    - name: Publish package to PyPI
+    - name: Publish package to Test PyPI
       uses: pypa/gh-action-pypi-publish@master
-      if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
       with:
         user: __token__
-        password: ${{ secrets.pypi_password }}
+        password: ${{ secrets.testpypi_password }}
         packages_dir: ./wheelhouse/
+
+    # - name: Publish package to PyPI
+    #   uses: pypa/gh-action-pypi-publish@master
+    #   if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+    #   with:
+    #     user: __token__
+    #     password: ${{ secrets.pypi_password }}
+    #     packages_dir: ./wheelhouse/
+
+
+
