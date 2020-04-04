@@ -24,7 +24,7 @@ F = qdldl.Solver(A)
 ```
 
 where `A` must be a square quasi-definite matrix in [scipy sparse CSC
-format](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csc_matrix.html/).
+format](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csc_matrix.html).
 
 To solve the linear system for a right-hand side `b`, just write
 
