@@ -86,6 +86,7 @@ QDLDL_float * Solver::solve(QDLDL_float * b){
     QDLDL_solve(nx, Lp, Li, Lx, Dinv, work);
     permutet_x(nx, x, work, P);
 
+	delete [] work;
 	return x;
 
 }

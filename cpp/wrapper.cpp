@@ -28,7 +28,11 @@ py::array PySolver::solve(
 	auto x = s->solve(b);
     py::gil_scoped_acquire acquire;
 
-    return py::array(s->nx, x);
+	py::array x_py = py::array(s->nx, x);
+
+	delete [] x;
+
+    return x_py;
 }
 
 void PySolver::update(const py::object Anew){

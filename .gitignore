@@ -134,3 +134,4 @@ dmypy.json
 _qdldl.c
 libqdldl*
 *.DS_Store
+scratch/
