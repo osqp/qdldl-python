@@ -103,7 +103,7 @@ qdldl = Extension('qdldl',
                                  get_pybind_include(),
                                  get_pybind_include(user=False)],
                    language='c++',
-                   extra_compile_args = compile_args + ['-std=c++11', "-g"],
+                   extra_compile_args = compile_args + ['-std=c++11'],
                    extra_objects=[qdldl_lib])
 
 
@@ -112,7 +112,7 @@ def readme():
         return f.read()
 
 setup(name='qdldl',
-      version='0.1.0',
+      version='0.1.1',
       author='Bartolomeo Stellato, Paul Goulart, Goran Banjac',
       author_email='bartolomeo.stellato@gmail.com',
       description='QDLDL, a free LDL factorization routine.',
