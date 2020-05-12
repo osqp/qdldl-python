@@ -27,9 +27,6 @@ py::array PySolver::solve(
 	if ((QDLDL_int)b_py.size() != this->s->nx)
 		throw py::value_error("Length of b does not match size of A");
 
-	py::print("Size of b: ", b_py.size());
-	py::print("Size of A: ", this->s->nx);
-
 	py::gil_scoped_release release;
 	auto x = s->solve(b);
     py::gil_scoped_acquire acquire;
