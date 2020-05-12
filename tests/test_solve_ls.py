@@ -125,5 +125,58 @@ class solve_ls(unittest.TestCase):
                                rtol=1e-05,
                                atol=1e-05)
 
+    def test_upper(self):
+        np.random.seed(2)
+        n = 5
+        A = random_psd(n, n)
+        B = random_psd(n, n)
+        C = - random_psd(n, n)
+        M = spa.bmat([[A, B.T], [B, C]], format='csc')
+        b = np.random.randn(n + n)
+
+        #  import ipdb; ipdb.set_trace()
+        m = qdldl.Solver(M)
+        x_qdldl = m.solve(b)
+
+
+        M_triu = spa.triu(M, format='csc')
+        m_triu = qdldl.Solver(M_triu, upper=True)
+        x_qdldl_triu = m_triu.solve(b)
+
+
+        nptest.assert_allclose(x_qdldl,
+                               x_qdldl_triu,
+                               rtol=1e-05,
+                               atol=1e-05)
+
+
+    def test_update_upper(self):
+        n = 5
+        A = random_psd(n, n)
+        B = random_psd(n, n)
+        C = - random_psd(n, n)
+        M = spa.bmat([[A, B.T], [B, C]], format='csc')
+        b = np.random.randn(n + n)
+
+        F = qdldl.Solver(M)
+        F_upper = qdldl.Solver(spa.triu(M, format='csc'), upper=True)
+
+        x_first_qdldl = F.solve(b)
+        x_first_qdldl_upper = F_upper.solve(b)
+
+        # Update
+        M.data = M.data + 0.1 * np.random.randn(M.nnz)
+        # Symmetrize matrix
+        M =.5 * (M + M.T)
+
+        F.update(M)
+        F_upper.update(spa.triu(M, format='csc'), upper=True)
+        x_second_qdldl = F.solve(b)
+        x_second_qdldl_upper = F_upper.solve(b)
+
+        nptest.assert_allclose(x_second_qdldl,
+                               x_second_qdldl_upper,
+                               rtol=1e-05,
+                               atol=1e-05)
 
 
