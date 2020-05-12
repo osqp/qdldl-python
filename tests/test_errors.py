@@ -1,14 +1,7 @@
 import qdldl
 import scipy.sparse as spa
-import scipy.sparse.linalg as sla
-from .utils import random_psd
 import numpy as np
-from multiprocessing.pool import ThreadPool
-
-# Unit Test
 import unittest
-import numpy.testing as nptest
-from time import time
 
 
 class solve_ls(unittest.TestCase):
