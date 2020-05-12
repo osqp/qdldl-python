@@ -9,9 +9,9 @@ using namespace py::literals; // to bring in the `_a` literal
 
 class PySolver{
 	public:
-		PySolver(py::object A);
+		PySolver(py::object A, const bool upper);
 		py::array solve(py::array_t<QDLDL_float, py::array::c_style | py::array::forcecast> b_py);
-		void update(py::object Anew_py);
+		void update(py::object Anew_py, const bool upper);
 
 	private:
 		std::unique_ptr<qdldl::Solver> s;
@@ -38,11 +38,19 @@ py::array PySolver::solve(
     return x_py;
 }
 
-void PySolver::update(const py::object Anew){
+void PySolver::update(py::object Anew, const bool upper=false){
 
-	// Use scipy to convert to upper triangular and get data
 	py::object spa = py::module::import("scipy.sparse");
-	py::object Anew_triu = spa.attr("triu")(Anew, "format"_a="csc");
+
+	if (!spa.attr("isspmatrix_csc")(Anew)) Anew = spa.attr("csc_matrix")(Anew);
+
+	py::object Anew_triu;
+	if (upper){
+		Anew_triu = Anew;
+	} else {
+		Anew_triu = spa.attr("triu")(Anew, "format"_a="csc");
+	}
+
 	auto Anew_x_py = Anew_triu.attr("data").cast<py::array_t<QDLDL_float>>();
 
 	auto Anew_x = (QDLDL_float *)Anew_x_py.data();
@@ -54,7 +62,7 @@ void PySolver::update(const py::object Anew){
 
 
 
-PySolver::PySolver(py::object A){
+PySolver::PySolver(py::object A, const bool upper=false){
 
 	// Use scipy to convert to upper triangular and get data
 	py::object spa = py::module::import("scipy.sparse");
@@ -70,7 +78,12 @@ PySolver::PySolver(py::object A){
 
 	if (A.attr("nnz").cast<int>() == 0) throw py::value_error("Matrix A is empty");
 
-	py::object A_triu = spa.attr("triu")(A, "format"_a="csc");
+    py::object A_triu;
+	if (upper){
+		A_triu = A;  // Already in upper-triangular format
+	} else {
+		A_triu = spa.attr("triu")(A, "format"_a="csc");
+	}
 
 	auto Ap_py = A_triu.attr("indptr").cast<py::array_t<QDLDL_int, py::array::c_style>>();
 	auto Ai_py = A_triu.attr("indices").cast<py::array_t<QDLDL_int, py::array::c_style>>();
@@ -95,7 +108,7 @@ PySolver::PySolver(py::object A){
 PYBIND11_MODULE(qdldl, m) {
   m.doc() = "QDLDL wrapper";
   py::class_<PySolver>(m, "Solver")
-	  .def(py::init<py::object>())
+	  .def(py::init<py::object, bool>(), py::arg("A"), py::arg("upper") = false)
 	  .def("solve", &PySolver::solve)
-	  .def("update", &PySolver::update);
+	  .def("update", &PySolver::update, py::arg("Anew"), py::arg("upper") = false);
 }

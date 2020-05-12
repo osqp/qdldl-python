@@ -26,6 +26,8 @@ F = qdldl.Solver(A)
 where `A` must be a square quasi-definite matrix in [scipy sparse CSC
 format](https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.csc_matrix.html).
 
+The algorithm internally converts the matrix into upper triangular format. If `A` is already upper-triangular, you can specify it with the argument `upper=True` to the `qdldl.Solver` constructor.
+
 To solve the linear system for a right-hand side `b`, just write
 
 ```
@@ -39,4 +41,6 @@ F.update(A_new)
 ```
 
 where `A_new` is a sparse matrix in CSR format with the same sparsity pattern as `A`.
+
+The algorithm internally converts `A_new` into upper triangular format. If `A_new` is already upper-triangular, you can specify it with the argument `upper=True` to the `F.update` function.
 
