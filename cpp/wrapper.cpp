@@ -24,6 +24,9 @@ py::array PySolver::solve(
 
 	auto b = (QDLDL_float *)b_py.data();
 
+	if ((QDLDL_int)b_py.size() != this->s->nx)
+		throw py::value_error("Length of b does not match size of A");
+
 	py::gil_scoped_release release;
 	auto x = s->solve(b);
     py::gil_scoped_acquire acquire;
@@ -61,11 +64,11 @@ PySolver::PySolver(py::object A){
 	int m = dim[0].cast<int>();
 	int n = dim[1].cast<int>();
 
-	if (m != n) py::value_error("Matrix A is not square");
+	if (m != n) throw py::value_error("Matrix A is not square");
 
 	if (!spa.attr("isspmatrix_csc")(A)) A = spa.attr("csc_matrix")(A);
 
-	if (A.attr("nnz").cast<int>() == 0) py::value_error("Matrix A is empty");
+	if (A.attr("nnz").cast<int>() == 0) throw py::value_error("Matrix A is empty");
 
 	py::object A_triu = spa.attr("triu")(A, "format"_a="csc");
 
