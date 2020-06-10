@@ -22,6 +22,7 @@ class get_pybind_include(object):
     def __init__(self, user=False):
         try:
             import pybind11
+            pybind11
         except ImportError:
             if call([sys.executable, '-m', 'pip', 'install', 'pybind11']):
                 raise RuntimeError('pybind11 install failed.')
@@ -30,6 +31,7 @@ class get_pybind_include(object):
     def __str__(self):
         import pybind11
         return pybind11.get_include(self.user)
+
 
 # Add parameters to cmake_args and define_macros
 cmake_args = ["-DUNITTESTS=OFF"]
@@ -63,6 +65,7 @@ qdldl_build_dir = os.path.join(qdldl_dir, 'build')
 qdldl_lib = [qdldl_build_dir, 'out'] + lib_subdir + [lib_name]
 qdldl_lib = os.path.join(*qdldl_lib)
 
+
 class build_ext_qdldl(build_ext):
     def build_extensions(self):
 
@@ -88,28 +91,21 @@ class build_ext_qdldl(build_ext):
         build_ext.build_extensions(self)
 
 
-if sys.platform == 'darwin':
-    if 'MACOSX_DEPLOYMENT_TARGET' not in os.environ:
-        current_system = distutils.version.LooseVersion(platform.mac_ver()[0])
-        python_target = distutils.version.LooseVersion(
-            distutils.sysconfig.get_config_var('MACOSX_DEPLOYMENT_TARGET'))
-        if python_target < '10.9' and current_system >= '10.9':
-            os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
-
 qdldl = Extension('qdldl',
-                   sources= glob(os.path.join('cpp', '*.cpp')),
-                   include_dirs=[os.path.join('c'),
-                                 os.path.join('c', 'qdldl', 'include'),
-                                 get_pybind_include(),
-                                 get_pybind_include(user=False)],
-                   language='c++',
-                   extra_compile_args = compile_args + ['-std=c++11'],
-                   extra_objects=[qdldl_lib])
+                  sources=glob(os.path.join('cpp', '*.cpp')),
+                  include_dirs=[os.path.join('c'),
+                                os.path.join('c', 'qdldl', 'include'),
+                                get_pybind_include(),
+                                get_pybind_include(user=False)],
+                  language='c++',
+                  extra_compile_args=compile_args + ['-std=c++11'],
+                  extra_objects=[qdldl_lib])
 
 
 def readme():
     with open('README.md') as f:
         return f.read()
+
 
 setup(name='qdldl',
       version='0.1.2',
@@ -117,6 +113,7 @@ setup(name='qdldl',
       author_email='bartolomeo.stellato@gmail.com',
       description='QDLDL, a free LDL factorization routine.',
       long_description=readme(),
+      long_description_content_type='text/markdown',
       package_dir={'qdldl': 'module'},
       include_package_data=True,  # Include package data from MANIFEST.in
       setup_requires=["setuptools>=18.0", "pybind11"],

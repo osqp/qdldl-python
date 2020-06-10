@@ -1,5 +1,7 @@
 include LICENSE README.md
+recursive-include tests/ *
+prune tests/__pycache__/
 recursive-include c/ *
-recursive-include cpp/ *
 prune c/build/
+recursive-include cpp/ *
 prune c/qdldl/build
