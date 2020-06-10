@@ -58,8 +58,7 @@ else:
 
 # Compile QDLDL using CMake
 current_dir = os.getcwd()
-root_dir = os.path.dirname(os.path.abspath(__file__))
-qdldl_dir = os.path.join(root_dir, 'c')
+qdldl_dir = os.path.join(current_dir, 'c',)
 qdldl_build_dir = os.path.join(qdldl_dir, 'build')
 qdldl_lib = [qdldl_build_dir, 'out'] + lib_subdir + [lib_name]
 qdldl_lib = os.path.join(*qdldl_lib)
