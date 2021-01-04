@@ -33,7 +33,7 @@ jobs:
     - name: Build wheels
       env:
         CIBW_BUILD: "cp3?-*"
-        CIBW_SKIP: "*-win32"
+        CIBW_SKIP: "*-win32 cp35-* cp27-*"
         CIBW_MANYLINUX_X86_64_IMAGE: "dockcross/manylinux2014-x64"
         CIBW_MANYLINUX_I686_IMAGE: "dockcross/manylinux2014-x86"
         CIBW_TEST_REQUIRES: "pytest"
