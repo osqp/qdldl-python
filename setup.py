@@ -119,7 +119,7 @@ setup(name='qdldl',
       setup_requires=["setuptools>=18.0", "pybind11"],
       install_requires=["numpy >= 1.7", "scipy >= 0.13.2"],
       license='Apache 2.0',
-      url="https://github.com/oxfordcontrol/qdldlpy/",
+      url="https://github.com/oxfordcontrol/qdldl-python/",
       cmdclass={'build_ext': build_ext_qdldl},
       ext_modules=[qdldl],
       )
