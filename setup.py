@@ -35,7 +35,7 @@ class get_pybind_include(object):
 
 cmake_args = []
 # What variables from the environment do we wish to pass on to cmake as variables?
-cmake_env_vars = ('CMAKE_GENERATOR', )
+cmake_env_vars = ('CMAKE_GENERATOR', 'CMAKE_GENERATOR_PLATFORM')
 for cmake_env_var in cmake_env_vars:
     cmake_var = os.environ.get(cmake_env_var)
     if cmake_var:
@@ -48,8 +48,6 @@ lib_subdir = []
 
 # Check if windows linux or mac to pass flag
 if system() == 'Windows':
-    if sys.maxsize // 2 ** 32 > 0:
-        cmake_args += ['-A', 'x64']
     cmake_build_flags += ['--config', 'Release']
     lib_name = 'qdldlamd.lib'
     lib_subdir = ['Release']
