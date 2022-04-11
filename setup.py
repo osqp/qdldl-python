@@ -33,23 +33,28 @@ class get_pybind_include(object):
         return pybind11.get_include(self.user)
 
 
+cmake_args = []
+# What variables from the environment do we wish to pass on to cmake as variables?
+cmake_env_vars = ('CMAKE_GENERATOR', )
+for cmake_env_var in cmake_env_vars:
+    cmake_var = os.environ.get(cmake_env_var)
+    if cmake_var:
+        cmake_args.extend([f'-D{cmake_env_var}={cmake_var}'])
+
 # Add parameters to cmake_args and define_macros
-cmake_args = ["-DUNITTESTS=OFF"]
+cmake_args += ["-DUNITTESTS=OFF"]
 cmake_build_flags = []
 lib_subdir = []
 
 # Check if windows linux or mac to pass flag
 if system() == 'Windows':
-    cmake_args += ['-G', 'Visual Studio 14 2015']
-    # Differentiate between 32-bit and 64-bit
     if sys.maxsize // 2 ** 32 > 0:
-        cmake_args[-1] += ' Win64'
+        cmake_args += ['-A', 'x64']
     cmake_build_flags += ['--config', 'Release']
     lib_name = 'qdldlamd.lib'
     lib_subdir = ['Release']
 
 else:  # Linux or Mac
-    cmake_args += ['-G', 'Unix Makefiles']
     lib_name = 'libqdldlamd.a'
 
 # Set optimizer flag

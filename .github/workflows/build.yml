@@ -38,6 +38,9 @@ jobs:
         CIBW_MANYLINUX_X86_64_IMAGE: "dockcross/manylinux2014-x64"
         CIBW_TEST_REQUIRES: "pytest"
         CIBW_TEST_COMMAND: "pytest {project}/tests"
+        CIBW_ENVIRONMENT_LINUX: CMAKE_GENERATOR="Unix Makefiles"
+        CIBW_ENVIRONMENT_MACOS: CMAKE_GENERATOR="Unix Makefiles"
+        CIBW_ENVIRONMENT_WINDOWS: CMAKE_GENERATOR="Visual Studio 2022"
       run: |
         python -m pip install cibuildwheel
         python -m cibuildwheel --output-dir wheelhouse
