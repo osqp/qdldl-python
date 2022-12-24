@@ -4,7 +4,7 @@ from setuptools.command.build_ext import build_ext
 from shutil import copyfile, copy
 from glob import glob
 import shutil as sh
-from subprocess import call, check_output
+from subprocess import check_output, run
 from platform import system
 import os
 import sys
@@ -24,8 +24,9 @@ class get_pybind_include(object):
             import pybind11
             pybind11
         except ImportError:
-            if call([sys.executable, '-m', 'pip', 'install', 'pybind11']):
-                raise RuntimeError('pybind11 install failed.')
+            cmd = run([sys.executable, '-m', 'pip', 'install', 'pybind11'], capture_output=True)
+            if cmd:
+                raise RuntimeError(f'pybind11 install failed: {cmd.stderr.decode()}')
         self.user = user
 
     def __str__(self):
@@ -83,8 +84,8 @@ class build_ext_qdldl(build_ext):
             raise RuntimeError("CMake must be installed to build qdldl")
 
         # Compile static library with CMake
-        call(['cmake'] + cmake_args + ['..'])
-        call(['cmake', '--build', '.', '--target', 'qdldlamd'] +
+        run(['cmake'] + cmake_args + ['..'])
+        run(['cmake', '--build', '.', '--target', 'qdldlamd'] +
              cmake_build_flags)
 
         # Change directory back to the python interface
