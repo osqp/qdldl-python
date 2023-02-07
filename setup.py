@@ -25,7 +25,7 @@ class get_pybind_include(object):
             pybind11
         except ImportError:
             cmd = run([sys.executable, '-m', 'pip', 'install', 'pybind11'], capture_output=True)
-            if cmd:
+            if cmd.returncode != 0:
                 raise RuntimeError(f'pybind11 install failed: {cmd.stderr.decode()}')
         self.user = user
 
