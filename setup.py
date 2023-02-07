@@ -119,6 +119,7 @@ setup(name='qdldl',
       long_description_content_type='text/markdown',
       package_dir={'qdldl': 'module'},
       include_package_data=True,  # Include package data from MANIFEST.in
+      setup_requires=["setuptools>=18.0", "pybind11"],
       install_requires=["numpy >= 1.7", "scipy >= 0.13.2"],
       license='Apache 2.0',
       url="https://github.com/oxfordcontrol/qdldl-python/",
