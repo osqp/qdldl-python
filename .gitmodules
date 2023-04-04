@@ -1,6 +1,3 @@
-[submodule "qdldl"]
-	path = qdldl
-	url = https://github.com/oxfordcontrol/qdldl
 [submodule "c/qdldl"]
 	path = c/qdldl
 	url = https://github.com/oxfordcontrol/qdldl
