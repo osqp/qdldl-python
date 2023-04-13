@@ -1,4 +1,4 @@
 [build-system]
-requires = ["setuptools>=49.5.0", "pybind11"]
+requires = ["setuptools>=49.5.0", "pybind11", "cmake"]
 build-backend = "setuptools.build_meta"
 
