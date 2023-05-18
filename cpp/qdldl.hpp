@@ -40,10 +40,18 @@ class Solver {
 	public:
 		QDLDL_int nx; // Size
 		QDLDL_int nnz; // Number of nonzero elements in the matrix
+		QDLDL_int sum_Lnz; // Number of nonzero elements in the factor L
 
 		Solver(QDLDL_int n, QDLDL_int * Ap, QDLDL_int *Ai, QDLDL_float * Ax);
 		QDLDL_float * solve(QDLDL_float * b);
 		void update(QDLDL_float * Anew_x);
+
+        QDLDL_float *get_D();
+        QDLDL_int *get_Lp();
+        QDLDL_int *get_Li();
+        QDLDL_float *get_Lx();
+        QDLDL_int *get_P();
+
 		~Solver();
 
 };
