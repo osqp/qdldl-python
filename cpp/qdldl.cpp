@@ -48,7 +48,7 @@ Solver::Solver(QDLDL_int n, QDLDL_int * Ap, QDLDL_int *Ai, QDLDL_float * Ax){
 	symperm(n, Ap, Ai, Ax, Aperm_p, Aperm_i, Aperm_x, Pinv, A2Aperm, work_perm);
 
 	// Compute elimination tree
-    int sum_Lnz = QDLDL_etree(n, Aperm_p, Aperm_i, iwork, Lnz, etree);
+    sum_Lnz = QDLDL_etree(n, Aperm_p, Aperm_i, iwork, Lnz, etree);
 
 	if (sum_Lnz < 0)
 		throw std::runtime_error(std::string("Error in computing elimination tree. Matrix not properly upper-triangular, sum_Lnz = ") + std::to_string(sum_Lnz));
@@ -75,7 +75,25 @@ Solver::Solver(QDLDL_int n, QDLDL_int * Ap, QDLDL_int *Ai, QDLDL_float * Ax){
 }
 
 
+QDLDL_float * Solver::get_D(){
+    return D;
+}
 
+QDLDL_int * Solver::get_P(){
+    return P;
+}
+
+QDLDL_int * Solver::get_Lp(){
+    return Lp;
+}
+
+QDLDL_int * Solver::get_Li(){
+    return Li;
+}
+
+QDLDL_float * Solver::get_Lx(){
+    return Lx;
+}
 
 QDLDL_float * Solver::solve(QDLDL_float * b){
 

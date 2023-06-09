@@ -12,6 +12,7 @@ class PySolver{
 		PySolver(py::object A, const bool upper);
 		py::array solve(py::array_t<QDLDL_float, py::array::c_style | py::array::forcecast> b_py);
 		void update(py::object Anew_py, const bool upper);
+		py::tuple factors();
 
 	private:
 		std::unique_ptr<qdldl::Solver> s;
@@ -60,6 +61,25 @@ void PySolver::update(py::object Anew, const bool upper=false){
     py::gil_scoped_acquire acquire;
 }
 
+py::tuple PySolver::factors() {
+
+	py::object spa = py::module::import("scipy.sparse");
+
+    QDLDL_int n = s->nx;
+    QDLDL_int Lnz = s->sum_Lnz;
+    py::array Lp = py::array(n+1, s->get_Lp());
+    py::array Li = py::array(Lnz, s->get_Li());
+    py::array Lx = py::array(Lnz, s->get_Lx());
+
+    auto L = spa.attr("csc_matrix")(
+         py::make_tuple(Lx, Li, Lp), py::make_tuple(n, n)
+    );
+
+    py::array D = py::array(n, s->get_D());
+    py::array P = py::array(n, s->get_P());
+
+    return py::make_tuple(L, D, P);
+}
 
 
 PySolver::PySolver(py::object A, const bool upper=false){
@@ -110,5 +130,16 @@ PYBIND11_MODULE(qdldl, m) {
   py::class_<PySolver>(m, "Solver")
 	  .def(py::init<py::object, bool>(), py::arg("A"), py::arg("upper") = false)
 	  .def("solve", &PySolver::solve)
-	  .def("update", &PySolver::update, py::arg("Anew"), py::arg("upper") = false);
+	  .def("update", &PySolver::update, py::arg("Anew"), py::arg("upper") = false)
+	  .def("factors", &PySolver::factors, R"delim(
+            factors returns a sparse n x n matrix L, a n-array d and a list of
+            indexes p that represent the decomposition of A.
+
+            Specifically,
+            A == P @ (spa.eye(n) + L) @ spa.diags(d)  @ (spa.eye(n) + L).T @ P.T
+            where P is the matrix given by
+            P = spa.dok_matrix((n, n))
+            P[p, np.arange(n)] = 1.0
+            P = P.tocsr()
+)delim");
 }
