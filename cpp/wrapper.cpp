@@ -131,5 +131,15 @@ PYBIND11_MODULE(qdldl, m) {
 	  .def(py::init<py::object, bool>(), py::arg("A"), py::arg("upper") = false)
 	  .def("solve", &PySolver::solve)
 	  .def("update", &PySolver::update, py::arg("Anew"), py::arg("upper") = false)
-	  .def("factors", &PySolver::factors);
+	  .def("factors", &PySolver::factors, R"delim(
+            factors returns a sparse n x n matrix L, a n-array d and a list of
+            indexes p that represent the decomposition of A.
+
+            Specifically,
+            A == P @ (spa.eye(n) + L) @ spa.diags(d)  @ (spa.eye(n) + L).T @ P.T
+            where P is the matrix given by
+            P = spa.dok_matrix((n, n))
+            P[p, np.arange(n)] = 1.0
+            P = P.tocsr()
+)delim");
 }
