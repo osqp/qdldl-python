@@ -9,7 +9,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-2022]
+        # Include macos-13 to get Intel x86_64 macs and maos-latest to get the Aaarch64 macs
+        os: [ubuntu-latest, macos-latest, macos-13, windows-2022]
 
     steps:
     - uses: actions/checkout@master
