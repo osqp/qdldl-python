@@ -1,7 +1,11 @@
-cmake_minimum_required (VERSION 3.2)
+cmake_minimum_required (VERSION 3.5)
 
 # Project name
 project (qdldl_amd)
+
+if(APPLE)
+    message(STATUS "Building for Apple arches: ${CMAKE_OSX_ARCHITECTURES}")
+endif()
 
 # Needed for compilation to succeed
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)

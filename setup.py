@@ -35,14 +35,14 @@ class get_pybind_include(object):
 
 cmake_args = []
 # What variables from the environment do we wish to pass on to cmake as variables?
-cmake_env_vars = ('CMAKE_GENERATOR', 'CMAKE_GENERATOR_PLATFORM')
+cmake_env_vars = ('CMAKE_GENERATOR', 'CMAKE_GENERATOR_PLATFORM', 'CMAKE_OSX_ARCHITECTURES')
 for cmake_env_var in cmake_env_vars:
     cmake_var = os.environ.get(cmake_env_var)
     if cmake_var:
         cmake_args.extend([f'-D{cmake_env_var}={cmake_var}'])
 
 # Add parameters to cmake_args and define_macros
-cmake_args += ["-DUNITTESTS=OFF"]
+cmake_args += ["-DQDLDL_UNITTESTS=OFF"]
 cmake_build_flags = []
 lib_subdir = []
 
