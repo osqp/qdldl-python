@@ -78,7 +78,7 @@ jobs:
         CIBW_TEST_SKIP: "cp38-macosx_*:arm64"
         # Clean the build directory between builds
         CIBW_BEFORE_BUILD: >-
-          rm -rf {package}/build
+          rm -rf {package}/c/build
         CIBW_ENVIRONMENT_LINUX: CMAKE_GENERATOR="Unix Makefiles"
         CIBW_ENVIRONMENT_MACOS: CMAKE_GENERATOR="Unix Makefiles" CMAKE_OSX_ARCHITECTURES=${{ matrix.osx_arch }}
         CIBW_ENVIRONMENT_WINDOWS: CMAKE_GENERATOR="Visual Studio 17 2022" CMAKE_GENERATOR_PLATFORM=x64
