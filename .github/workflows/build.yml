@@ -1,8 +1,35 @@
-name: Build
+name: Build wheels
 
 on: [push, pull_request]
 
 jobs:
+  build_sdist:
+    name: Build source
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@master
+      with:
+        submodules: 'recursive'
+
+    - uses: actions/setup-python@v5
+      name: Install Python
+      with:
+        python-version: '3.12'
+
+    - name: Build source
+      run: |
+        python -m pip install build
+        python -m build --sdist --outdir=wheelhouse
+
+    - name: Upload sdist to github
+      uses: actions/upload-artifact@v4
+      with:
+        name: wheels-sdist
+        path: wheelhouse/*.tar.gz
+        if-no-files-found: error
+
   build_wheels:
     name: Build wheel on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -39,6 +66,7 @@ jobs:
         python-version: '3.12'
 
     - name: Build wheels
+      uses: pypa/cibuildwheel@v2.19.1
       env:
         CIBW_BUILD: "cp3*"
         CIBW_SKIP: "*-win32 *-manylinux_i686 *-musllinux_*"
@@ -47,38 +75,26 @@ jobs:
         CIBW_TEST_COMMAND: "pytest {project}/tests"
         # Skip testing on arm64 Python 3.8 because it uses the x86_64 executable, not the arm executable
         CIBW_TEST_SKIP: "cp38-macosx_*:arm64"
+        # Clean the build directory between builds
+        CIBW_BEFORE_BUILD: >-
+          rm -rf {package}/c/build
         CIBW_ENVIRONMENT_LINUX: CMAKE_GENERATOR="Unix Makefiles"
         CIBW_ENVIRONMENT_MACOS: CMAKE_GENERATOR="Unix Makefiles" CMAKE_OSX_ARCHITECTURES=${{ matrix.osx_arch }}
         CIBW_ENVIRONMENT_WINDOWS: CMAKE_GENERATOR="Visual Studio 17 2022" CMAKE_GENERATOR_PLATFORM=x64
         CIBW_BUILD_VERBOSITY: 1
-      run: |
-        python -m pip install cibuildwheel build
-        python -m cibuildwheel --output-dir wheelhouse
-
-    - name: Build source
-      if: startsWith(matrix.os, 'ubuntu')
-      run: |
-        python -m build --sdist --outdir=wheelhouse
-
-    - name: Release to pypi
-      if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
-      env:
-        TWINE_USERNAME: __token__
-        TWINE_PASSWORD: ${{ secrets.pypi_password }}
-      run: |
-        python -m pip install --upgrade twine
-        twine upload wheelhouse/*
 
     - name: Upload artifacts to github
       uses: actions/upload-artifact@v4
       with:
         name: wheels-${{ matrix.os }}
-        path: ./wheelhouse
+        path: ./wheelhouse/*.whl
+        if-no-files-found: error
 
-  merge_artifacts:
-    name: Merge wheel artifacts from build_wheels OS matrix jobs
+
+  merge_wheel_artifacts:
+    name: Merge wheel artifacts
     runs-on: ubuntu-latest
-    needs: build_wheels
+    needs: [build_sdist, build_wheels]
     steps:
       - name: Merge artifacts
         uses: actions/upload-artifact/merge@v4
@@ -86,3 +102,27 @@ jobs:
           name: wheels
           pattern: wheels-*
           delete-merged: true
+
+
+  publish_to_pypi:
+    name: Publish wheels to PyPi
+    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+    needs: merge_wheel_artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download packages
+        uses: actions/download-artifact@v4
+        with:
+          pattern: wheels*
+          path: wheelhouse
+
+      - name: Print out packages
+        run: ls wheelhouse
+
+      - name: Upload wheels to pypi
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.pypi_password }}
+        run: |
+          python -m pip install --upgrade twine
+          twine upload wheelhouse/*
