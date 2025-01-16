@@ -39,7 +39,7 @@ jobs:
         include:
           - os: ubuntu-latest
             cibw_archs: "x86_64"
-          - os: ubuntu-latest
+          - os: ubuntu-24.04-arm
             cibw_archs: "aarch64"
           - os: windows-2022
             cibw_archs: "auto64"
@@ -53,13 +53,6 @@ jobs:
     - uses: actions/checkout@master
       with:
         submodules: 'recursive'
-
-      # This might not be necessary once ARM runners become available for general use
-    - name: Set up QEMU
-      if: matrix.cibw_archs == 'aarch64'
-      uses: docker/setup-qemu-action@v3
-      with:
-        platforms: arm64
 
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v2
