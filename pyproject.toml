@@ -6,7 +6,6 @@ requires = [
     "oldest-supported-numpy; python_version <= '3.8'",
     "setuptools>=49.5.0",
     "pybind11",
-    "cmake"
 ]
 build-backend = "setuptools.build_meta"
 
