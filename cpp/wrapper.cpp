@@ -125,7 +125,7 @@ PySolver::PySolver(py::object A, const bool upper=false){
 
 
 
-PYBIND11_MODULE(qdldl, m) {
+PYBIND11_MODULE(qdldl, m, py::mod_gil_not_used()) {
   m.doc() = "QDLDL wrapper";
   py::class_<PySolver>(m, "Solver")
 	  .def(py::init<py::object, bool>(), py::arg("A"), py::arg("upper") = false)
