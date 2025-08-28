@@ -123,9 +123,14 @@ PySolver::PySolver(py::object A, const bool upper=false){
 }
 
 
-
-
+// py:mod_gil_not_used() is only available on newer pybind versions, and
+// is only needed when the GIL is disabled, so hide its use unless we actually
+// need it.
+#ifdef Py_GIL_DISABLED
 PYBIND11_MODULE(qdldl, m, py::mod_gil_not_used()) {
+#else
+PYBIND11_MODULE(qdldl, m) {
+#endif
   m.doc() = "QDLDL wrapper";
   py::class_<PySolver>(m, "Solver")
 	  .def(py::init<py::object, bool>(), py::arg("A"), py::arg("upper") = false)
