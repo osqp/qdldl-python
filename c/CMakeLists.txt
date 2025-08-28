@@ -41,4 +41,5 @@ add_library(qdldlamd STATIC ${amd_src} $<TARGET_OBJECTS:qdldlobject>)
 target_include_directories(qdldlamd PRIVATE
 	                   ${CMAKE_CURRENT_SOURCE_DIR}/amd/include
 	                   ${CMAKE_CURRENT_SOURCE_DIR}/qdldl/include
+                       ${CMAKE_CURRENT_BINARY_DIR}/qdldl/include
 			    )
