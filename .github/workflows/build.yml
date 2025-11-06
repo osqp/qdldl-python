@@ -70,7 +70,7 @@ jobs:
         python-version: '3.12'
 
     - name: Build wheels
-      uses: pypa/cibuildwheel@v2.22.0
+      uses: pypa/cibuildwheel@v3.2.1
       env:
         CIBW_ENABLE: cpython-freethreading
         CIBW_BUILD: "cp3*"
