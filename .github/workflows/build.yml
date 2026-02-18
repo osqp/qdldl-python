@@ -120,6 +120,9 @@ jobs:
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.pypi_password }}
+        # Need to ensure both twine and packaging are updated to twine 6.2+ and packaging 25+
+        # to work around https://github.com/pypa/twine/issues/1216
         run: |
+          python -m pip install --upgrade packaging
           python -m pip install --upgrade twine
           twine upload dist/*
