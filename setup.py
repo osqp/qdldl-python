@@ -32,6 +32,9 @@ class get_pybind_include(object):
         import pybind11
         return pybind11.get_include(self.user)
 
+setup_requires = []
+if not sh.which("cmake"):
+    setup_requires += ["cmake"]
 
 cmake_args = []
 # What variables from the environment do we wish to pass on to cmake as variables?
@@ -120,6 +123,7 @@ setup(name='qdldl',
       long_description_content_type='text/markdown',
       package_dir={'qdldl': 'module'},
       include_package_data=True,  # Include package data from MANIFEST.in
+      setup_requires=setup_requires,
       install_requires=["numpy >= 1.7", "scipy >= 0.13.2"],
       license='Apache 2.0',
       url="https://github.com/oxfordcontrol/qdldl-python/",
