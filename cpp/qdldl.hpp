@@ -56,6 +56,57 @@ class Solver {
 
 };
 
+
+class SymbolicSolver {
+
+	private:
+		// Matrix L (sparsity pattern)
+		QDLDL_int * Lp;
+		QDLDL_int * Li;
+		QDLDL_float * Lx;
+
+		// Matrix D
+		QDLDL_float * D;
+		QDLDL_float * Dinv;
+
+		// Matrix P (permutation)
+		QDLDL_int * P;
+		QDLDL_int * Pinv;
+
+		// Workspace
+		QDLDL_int * etree;
+		QDLDL_int * Lnz;
+		QDLDL_int * iwork;
+		QDLDL_bool * bwork;
+		QDLDL_float * fwork;
+
+		// Permuted A
+		QDLDL_int * Aperm_p;
+		QDLDL_int * Aperm_i;
+		QDLDL_float * Aperm_x;
+		QDLDL_int * A2Aperm;
+
+		bool factored;
+
+	public:
+		QDLDL_int nx; // Size
+		QDLDL_int nnz; // Number of nonzero elements in the matrix
+		QDLDL_int sum_Lnz; // Number of nonzero elements in the factor L
+
+		SymbolicSolver(QDLDL_int n, QDLDL_int * Ap, QDLDL_int *Ai);
+		void factor(QDLDL_float * Ax);
+		QDLDL_float * solve(QDLDL_float * b);
+
+		QDLDL_float *get_D();
+		QDLDL_int *get_Lp();
+		QDLDL_int *get_Li();
+		QDLDL_float *get_Lx();
+		QDLDL_int *get_P();
+
+		~SymbolicSolver();
+
+};
+
 } // end namespace
 
 

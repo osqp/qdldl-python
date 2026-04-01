@@ -123,6 +123,136 @@ PySolver::PySolver(py::object A, const bool upper=false){
 }
 
 
+class PySymbolicSolver{
+	public:
+		PySymbolicSolver(py::object A, const bool upper);
+		void factor(py::object A, const bool upper);
+		py::array solve(py::array_t<QDLDL_float, py::array::c_style | py::array::forcecast> b_py);
+		py::tuple factors();
+
+	private:
+		std::unique_ptr<qdldl::SymbolicSolver> s;
+
+};
+
+
+PySymbolicSolver::PySymbolicSolver(py::object A, const bool upper=false){
+
+	py::object spa = py::module::import("scipy.sparse");
+
+	py::array_t<QDLDL_int, py::array::c_style> Ap_py;
+	py::array_t<QDLDL_int, py::array::c_style> Ai_py;
+
+	if (py::isinstance<py::tuple>(A)) {
+		// Accept (indptr, indices, shape) tuple for pattern-only input
+		py::tuple t = A.cast<py::tuple>();
+		if (t.size() != 3) throw py::value_error("Tuple must be (indptr, indices, shape)");
+
+		Ap_py = t[0].cast<py::array_t<QDLDL_int, py::array::c_style>>();
+		Ai_py = t[1].cast<py::array_t<QDLDL_int, py::array::c_style>>();
+
+		py::tuple shape = t[2].cast<py::tuple>();
+		int m = shape[0].cast<int>();
+		int n = shape[1].cast<int>();
+		if (m != n) throw py::value_error("Matrix A is not square");
+		if (Ap_py.request().size != n + 1)
+			throw py::value_error("indptr size does not match shape");
+	} else {
+		// Accept scipy sparse matrix
+		py::tuple dim = A.attr("shape");
+		int m = dim[0].cast<int>();
+		int n = dim[1].cast<int>();
+
+		if (m != n) throw py::value_error("Matrix A is not square");
+
+		if (!spa.attr("isspmatrix_csc")(A)) A = spa.attr("csc_matrix")(A);
+
+		if (A.attr("nnz").cast<int>() == 0) throw py::value_error("Matrix A is empty");
+
+		py::object A_triu;
+		if (upper){
+			A_triu = A;
+		} else {
+			A_triu = spa.attr("triu")(A, "format"_a="csc");
+		}
+
+		Ap_py = A_triu.attr("indptr").cast<py::array_t<QDLDL_int, py::array::c_style>>();
+		Ai_py = A_triu.attr("indices").cast<py::array_t<QDLDL_int, py::array::c_style>>();
+	}
+
+	QDLDL_int nx = Ap_py.request().size - 1;
+	QDLDL_int * Ap = (QDLDL_int *)Ap_py.data();
+	QDLDL_int * Ai = (QDLDL_int *)Ai_py.data();
+
+	py::gil_scoped_release release;
+	this->s = std::unique_ptr<qdldl::SymbolicSolver>(new qdldl::SymbolicSolver(nx, Ap, Ai));
+	py::gil_scoped_acquire acquire;
+}
+
+
+void PySymbolicSolver::factor(py::object Anew, const bool upper=false){
+
+	py::object spa = py::module::import("scipy.sparse");
+
+	if (!spa.attr("isspmatrix_csc")(Anew)) Anew = spa.attr("csc_matrix")(Anew);
+
+	py::object Anew_triu;
+	if (upper){
+		Anew_triu = Anew;
+	} else {
+		Anew_triu = spa.attr("triu")(Anew, "format"_a="csc");
+	}
+
+	auto Anew_x_py = Anew_triu.attr("data").cast<py::array_t<QDLDL_float>>();
+	auto Anew_x = (QDLDL_float *)Anew_x_py.data();
+
+	py::gil_scoped_release release;
+	s->factor(Anew_x);
+	py::gil_scoped_acquire acquire;
+}
+
+
+py::array PySymbolicSolver::solve(
+		const py::array_t<QDLDL_float, py::array::c_style | py::array::forcecast> b_py){
+
+	auto b = (QDLDL_float *)b_py.data();
+
+	if ((QDLDL_int)b_py.size() != this->s->nx)
+		throw py::value_error("Length of b does not match size of A");
+
+	py::gil_scoped_release release;
+	auto x = s->solve(b);
+	py::gil_scoped_acquire acquire;
+
+	py::array x_py = py::array(s->nx, x);
+
+	delete [] x;
+
+	return x_py;
+}
+
+
+py::tuple PySymbolicSolver::factors() {
+
+	py::object spa = py::module::import("scipy.sparse");
+
+	QDLDL_int n = s->nx;
+	QDLDL_int Lnz = s->sum_Lnz;
+	py::array Lp = py::array(n+1, s->get_Lp());
+	py::array Li = py::array(Lnz, s->get_Li());
+	py::array Lx = py::array(Lnz, s->get_Lx());
+
+	auto L = spa.attr("csc_matrix")(
+		 py::make_tuple(Lx, Li, Lp), py::make_tuple(n, n)
+	);
+
+	py::array D = py::array(n, s->get_D());
+	py::array P = py::array(n, s->get_P());
+
+	return py::make_tuple(L, D, P);
+}
+
+
 // py:mod_gil_not_used() is only available on newer pybind versions, and
 // is only needed when the GIL is disabled, so hide its use unless we actually
 // need it.
@@ -137,6 +267,21 @@ PYBIND11_MODULE(qdldl, m) {
 	  .def("solve", &PySolver::solve)
 	  .def("update", &PySolver::update, py::arg("Anew"), py::arg("upper") = false)
 	  .def("factors", &PySolver::factors, R"delim(
+            factors returns a sparse n x n matrix L, a n-array d and a list of
+            indexes p that represent the decomposition of A.
+
+            Specifically,
+            A == P @ (spa.eye(n) + L) @ spa.diags(d)  @ (spa.eye(n) + L).T @ P.T
+            where P is the matrix given by
+            P = spa.dok_matrix((n, n))
+            P[p, np.arange(n)] = 1.0
+            P = P.tocsr()
+)delim");
+  py::class_<PySymbolicSolver>(m, "SymbolicSolver")
+	  .def(py::init<py::object, bool>(), py::arg("A"), py::arg("upper") = false)
+	  .def("factor", &PySymbolicSolver::factor, py::arg("A"), py::arg("upper") = false)
+	  .def("solve", &PySymbolicSolver::solve)
+	  .def("factors", &PySymbolicSolver::factors, R"delim(
             factors returns a sparse n x n matrix L, a n-array d and a list of
             indexes p that represent the decomposition of A.
 
